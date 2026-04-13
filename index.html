@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Developer Productivity — Webflow</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --surface: #141920;
+        --surface2: #1c2430;
+        --border: #252e3d;
+        --text: #e2e8f0;
+        --muted: #7a8ba3;
+        --accent: #4f8ef7;
+        --green: #34d399;
+        --yellow: #fbbf24;
+        --red: #f87171;
+        --purple: #a78bfa;
+        --cyan: #22d3ee;
+        --mono: 'IBM Plex Mono', monospace;
+        --sans: 'IBM Plex Sans', sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      /* ── Header ── */
+      header {
+        border-bottom: 1px solid var(--border);
+        padding: 28px 40px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      header h1 {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        color: #fff;
+      }
+
+      header .meta {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      header .meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      header .meta .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      /* ── Layout ── */
+      main {
+        padding: 32px 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      section {
+        margin-bottom: 40px;
+      }
+
+      h2 {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* ── Stat Cards ── */
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .stat-card .label {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.1;
+      }
+
+      .stat-card .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .stat-card .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-family: var(--mono);
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      .badge-green {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--green);
+      }
+      .badge-yellow {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--yellow);
+      }
+      .badge-red {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--red);
+      }
+      .badge-blue {
+        background: rgba(79, 142, 247, 0.15);
+        color: var(--accent);
+      }
+
+      /* ── Chart Grid ── */
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 16px;
+      }
+
+      .chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .chart-card h3 {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 16px;
+      }
+
+      .chart-card canvas {
+        max-height: 240px;
+      }
+
+      /* ── Table ── */
+      .table-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      th {
+        text-align: left;
+        padding: 10px 16px;
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+        background: var(--surface2);
+      }
+
+      td {
+        padding: 11px 16px;
+        border-bottom: 1px solid rgba(37, 46, 61, 0.6);
+        vertical-align: middle;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .team-name {
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .num {
+        font-family: var(--mono);
+        font-size: 13px;
+      }
+      .num.up {
+        color: var(--green);
+      }
+      .num.down {
+        color: var(--red);
+      }
+      .num.neutral {
+        color: var(--muted);
+      }
+
+      /* ── Adoption bar ── */
+      .adopt-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .bar-track {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+        min-width: 60px;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--accent);
+        transition: width 0.6s ease;
+      }
+
+      .bar-fill.high {
+        background: var(--green);
+      }
+      .bar-fill.mid {
+        background: var(--yellow);
+      }
+      .bar-fill.low {
+        background: var(--muted);
+      }
+
+      /* ── Insights ── */
+      .insights-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px;
+      }
+
+      .insight-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px;
+      }
+
+      .insight-card .insight-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+
+      .insight-card p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .insight-card p strong {
+        color: var(--text);
+      }
+
+      /* ── Week tabs ── */
+      .week-tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 16px;
+      }
+
+      .week-tab {
+        padding: 6px 14px;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .week-tab.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      /* ── Footer ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 20px 40px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Developer Productivity · Webflow</h1>
+      <div class="meta">
+        <span
+          ><span class="dot"></span> Mar 14 – Apr 13, 2026 · 30 days · 4 weekly
+          windows</span
+        >
+        <span
+          >Teams: Design System · Build Loop · Agent Loop · Delivery Loop ·
+          Shared Services</span
+        >
+        <span>Source: DX Data Warehouse · GitHub · Jira · Cursor</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- ── Summary Stats ── -->
+      <section>
+        <h2>30-Day Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="label">Total PRs Merged</span>
+            <span class="value">506</span>
+            <span class="sub">5 teams · 30 days</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Full-Agentic Teams</span>
+            <span class="value">4 / 5</span>
+            <span class="sub">&gt;50% Cursor adoption</span>
+            <span class="badge badge-green">🟢 Accelerating</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Total Agent Requests</span>
+            <span class="value">4,452</span>
+            <span class="sub">Cursor Agent · 30d</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Pillar DXI (Jan)</span>
+            <span class="value">60</span>
+            <span class="sub">+1 vs org average</span>
+            <span class="badge badge-blue">Effectiveness</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Avg Defect Ratio</span>
+            <span class="value">1.4%</span>
+            <span class="sub">Bugs / total issues closed</span>
+            <span class="badge badge-green">Healthy</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Top PRs/Person/Wk</span>
+            <span class="value">10.7</span>
+            <span class="sub">Design System · W4</span>
+            <span class="badge badge-green">↑ Rising</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Lowest DXI</span>
+            <span class="value">45</span>
+            <span class="sub">Build Loop · −14 vs org ⚠️</span>
+            <span class="badge badge-red">Watch</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Innovation Leader</span>
+            <span class="value">59%</span>
+            <span class="sub">Delivery Loop · feature work</span>
+            <span class="badge badge-green">Impact</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Charts ── -->
+      <section>
+        <h2>Speed — PRs / Person / Week</h2>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>PRs Merged per Week (Total)</h3>
+            <canvas id="chartPRsTotal"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>PRs / Person / Week</h3>
+            <canvas id="chartPRsPerPerson"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Agentic Adoption — Cursor Agent Requests per Week</h2>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Cursor Agent Requests / Week</h3>
+            <canvas id="chartAgentReqs"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>30-Day Cursor Adoption by Team</h3>
+            <canvas id="chartAdoption"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Quality — Defect & Innovation Ratios</h2>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Innovation Ratio (Features / Total Issues, %)</h3>
+            <canvas id="chartInnovation"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Re-review Rate by Week (%)</h3>
+            <canvas id="chartReReview"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Core4 Table ── -->
+      <section>
+        <h2>Core4 Snapshot — Per Team (Jan 2026 DX Survey)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Speed (PRs/day)</th>
+                <th>Effectiveness (DXI)</th>
+                <th>vs Org</th>
+                <th>Quality (Defect %ile)</th>
+                <th>Impact (Innovation %ile)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="team-name">Design System</td>
+                <td class="num">2.62</td>
+                <td class="num">58</td>
+                <td class="num neutral">−1</td>
+                <td class="num">13.5</td>
+                <td class="num">48.3</td>
+              </tr>
+              <tr>
+                <td class="team-name">Build Loop</td>
+                <td class="num">1.50</td>
+                <td class="num down">45</td>
+                <td class="num down">−14 ⚠️</td>
+                <td class="num">6.2</td>
+                <td class="num">37.5</td>
+              </tr>
+              <tr>
+                <td class="team-name">Agent Loop</td>
+                <td class="num">0.90</td>
+                <td class="num">62</td>
+                <td class="num up">+3</td>
+                <td class="num up">29.1</td>
+                <td class="num up">65.5</td>
+              </tr>
+              <tr>
+                <td class="team-name">Delivery Loop</td>
+                <td class="num">1.99</td>
+                <td class="num">65</td>
+                <td class="num up">+6</td>
+                <td class="num">17.0</td>
+                <td class="num">48.3</td>
+              </tr>
+              <tr>
+                <td class="team-name">Shared Services</td>
+                <td class="num">1.23</td>
+                <td class="num up">74</td>
+                <td class="num up">+15 🟢</td>
+                <td class="num">11.7</td>
+                <td class="num">57.5</td>
+              </tr>
+              <tr
+                style="background: rgba(79, 142, 247, 0.05); font-weight: 600"
+              >
+                <td class="team-name" style="color: var(--accent)">Pillar</td>
+                <td class="num" style="color: var(--accent)">1.80</td>
+                <td class="num" style="color: var(--accent)">60</td>
+                <td class="num" style="color: var(--accent)">+1</td>
+                <td class="num" style="color: var(--accent)">12.3</td>
+                <td class="num" style="color: var(--accent)">48.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Adoption Table ── -->
+      <section>
+        <h2>Agentic Adoption — 30-Day Detail</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Team Size</th>
+                <th>Cursor Users (30d)</th>
+                <th>Adoption</th>
+                <th>Total Agent Reqs</th>
+                <th>W1 Reqs</th>
+                <th>W2 Reqs</th>
+                <th>W3 Reqs</th>
+                <th>W4 Reqs</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="adoptionTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Per-week throughput table ── -->
+      <section>
+        <h2>Speed — Weekly PR Throughput</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>W1 PRs</th>
+                <th>W1 /Person</th>
+                <th>W2 PRs</th>
+                <th>W2 /Person</th>
+                <th>W3 PRs</th>
+                <th>W3 /Person</th>
+                <th>W4 PRs</th>
+                <th>W4 /Person</th>
+                <th>Total</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody id="speedTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Insights ── -->
+      <section>
+        <h2>Key Insights</h2>
+        <div class="insights-grid">
+          <div class="insight-card">
+            <div class="insight-label">⚡ Speed</div>
+            <p>
+              <strong>Design System (+206%)</strong> and
+              <strong>Build Loop (+285%)</strong> show the strongest velocity
+              growth across 4 weeks — driven by agentic tooling ramp.
+              <strong>Delivery Loop</strong> peaked in W2 (12.4 PRs/person) then
+              tapered — consistent with a major initiative completing.
+            </p>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">🎯 Effectiveness</div>
+            <p>
+              <strong>Build Loop's DXI of 45 (−14 vs org)</strong> is the most
+              significant signal. Despite strong PR throughput growth, developer
+              experience is lagging — warrants a dedicated survey follow-up.
+              <strong>Shared Services leads at 74 (+15 vs org)</strong>.
+            </p>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">🛡️ Quality</div>
+            <p>
+              All teams are at very
+              <strong>low defect ratios (&lt;4%)</strong> — healthy signal
+              across the pillar. <strong>Agent Loop (12.7%)</strong> and
+              <strong>Delivery Loop (10%)</strong> have the highest re-review
+              rates, expected for high-velocity teams.
+            </p>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">🚀 Impact</div>
+            <p>
+              <strong>Delivery Loop at 59% innovation ratio</strong> — clearly
+              in feature execution mode (PNP 4.2 migration).
+              <strong>Design System and Build Loop are &lt;4%</strong> —
+              reflecting infrastructure and tech debt work (DDA migrations).
+            </p>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">🤖 Adoption</div>
+            <p>
+              <strong>4 of 5 teams qualify as Full-Agentic</strong> (&gt;50% of
+              members using Cursor Agent).
+              <strong
+                >Delivery Loop leads raw volume: 2,442 agent requests</strong
+              >
+              — Dustin Neighly averaged 50+ agent requests/day with high
+              acceptance rates in W3.
+            </p>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">⚠️ Watch</div>
+            <p>
+              <strong
+                >Build Loop: only 2 of 8 members using Cursor Agent
+                (25%)</strong
+              >
+              — the only team not Full-Agentic, correlating with their lower
+              DXI. Re-review rates are <em>not</em> negatively correlated with
+              agentic adoption — high-agentic teams aren't seeing worse review
+              quality.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span
+        >Generated Apr 13, 2026 · DX Data Warehouse · GitHub · Jira ·
+        Cursor</span
+      >
+      <span>
+        <span class="pill">DX Warehouse</span>
+        <span class="pill">github_pulls</span>
+        <span class="pill">cursor_daily_user_metrics</span>
+        <span class="pill">jira_issues</span>
+        <span class="pill">github_reviews</span>
+      </span>
+    </footer>
+
+    <script>
+      const TEAMS = [
+        'Design System',
+        'Build Loop',
+        'Agent Loop',
+        'Delivery Loop',
+        'Shared Services',
+      ];
+      const COLORS = ['#4f8ef7', '#34d399', '#a78bfa', '#22d3ee', '#fbbf24'];
+      const WEEKS = ['W1 Mar 14', 'W2 Mar 21', 'W3 Mar 28', 'W4 Apr 4'];
+
+      // ── Data ─────────────────────────────────────────────────────────────────────
+
+      const prsMerged = {
+        'Design System': [7, 19, 27, 32],
+        'Build Loop': [6, 17, 30, 23],
+        'Agent Loop': [30, 41, 35, 44],
+        'Delivery Loop': [38, 62, 49, 29],
+        'Shared Services': [7, 4, 1, 5],
+      };
+
+      const prsPerPerson = {
+        'Design System': [3.5, 6.3, 9.0, 10.7],
+        'Build Loop': [2.0, 3.4, 6.0, 7.7],
+        'Agent Loop': [2.7, 4.1, 3.2, 4.9],
+        'Delivery Loop': [6.3, 12.4, 8.2, 4.1],
+        'Shared Services': [1.75, 1.33, 1.0, 2.5],
+      };
+
+      const agentReqs = {
+        'Design System': [78, 228, 371, 33],
+        'Build Loop': [2, 8, 29, 75],
+        'Agent Loop': [195, 122, 269, 103],
+        'Delivery Loop': [436, 709, 817, 400],
+        'Shared Services': [131, 78, 95, 163],
+      };
+
+      const adoptionData = [
+        {
+          team: 'Design System',
+          size: 4,
+          users: 4,
+          pct: 100,
+          total: 712,
+          w: [78, 228, 371, 33],
+          status: '🟢 Full-Agentic',
+        },
+        {
+          team: 'Build Loop',
+          size: 8,
+          users: 2,
+          pct: 25,
+          total: 126,
+          w: [2, 8, 29, 75],
+          status: '🔵 Early',
+        },
+        {
+          team: 'Agent Loop',
+          size: 14,
+          users: 9,
+          pct: 64,
+          total: 699,
+          w: [195, 122, 269, 103],
+          status: '🟢 Full-Agentic',
+        },
+        {
+          team: 'Delivery Loop',
+          size: 8,
+          users: 4,
+          pct: 50,
+          total: 2442,
+          w: [436, 709, 817, 400],
+          status: '🟢 Full-Agentic',
+        },
+        {
+          team: 'Shared Services',
+          size: 5,
+          users: 3,
+          pct: 60,
+          total: 473,
+          w: [131, 78, 95, 163],
+          status: '🟢 Full-Agentic',
+        },
+      ];
+
+      const innovationPct = {
+        'Design System': [0, 0, 2.7, 5.3],
+        'Build Loop': [10.5, 4.2, 2.2, 0],
+        'Agent Loop': [14.8, 4.3, 41.4, 14.3],
+        'Delivery Loop': [84.5, 48.1, 42.9, 48.3],
+        'Shared Services': [0, 16.7, 10.3, 11.1],
+      };
+
+      const reReviewRate = {
+        'Design System': [0, 0, 2.9, 3.6],
+        'Build Loop': [11.1, 0, 3.0, 0],
+        'Agent Loop': [20.0, 7.0, 12.2, 11.4],
+        'Delivery Loop': [20.0, 5.9, 9.7, 4.5],
+        'Shared Services': [0, 0, 0, 20.0],
+      };
+
+      const speedTable = [
+        {
+          team: 'Design System',
+          data: [
+            [7, 3.5],
+            [19, 6.3],
+            [27, 9.0],
+            [32, 10.7],
+          ],
+          total: 85,
+          trend: '↑ Rising',
+        },
+        {
+          team: 'Build Loop',
+          data: [
+            [6, 2.0],
+            [17, 3.4],
+            [30, 6.0],
+            [23, 7.7],
+          ],
+          total: 76,
+          trend: '↑ Rising',
+        },
+        {
+          team: 'Agent Loop',
+          data: [
+            [30, 2.7],
+            [41, 4.1],
+            [35, 3.2],
+            [44, 4.9],
+          ],
+          total: 150,
+          trend: '→ Stable',
+        },
+        {
+          team: 'Delivery Loop',
+          data: [
+            [38, 6.3],
+            [62, 12.4],
+            [49, 8.2],
+            [29, 4.1],
+          ],
+          total: 178,
+          trend: '↓ Peak W2',
+        },
+        {
+          team: 'Shared Services',
+          data: [
+            [7, 1.75],
+            [4, 1.33],
+            [1, 1.0],
+            [5, 2.5],
+          ],
+          total: 17,
+          trend: '→ Low vol.',
+        },
+      ];
+
+      // ── Chart helpers ──────────────────────────────────────────────────────────
+
+      function baseChartOpts(stacked = false) {
+        return {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#7a8ba3',
+                font: {size: 11, family: 'IBM Plex Mono'},
+              },
+            },
+          },
+          scales: {
+            x: {
+              stacked,
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+              },
+              grid: {color: '#252e3d'},
+            },
+            y: {
+              stacked,
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+              },
+              grid: {color: '#252e3d'},
+            },
+          },
+        };
+      }
+
+      function lineDataset(label, data, color) {
+        return {
+          label,
+          data,
+          borderColor: color,
+          backgroundColor: color + '22',
+          tension: 0.35,
+          pointRadius: 4,
+          fill: false,
+        };
+      }
+
+      function barDataset(label, data, color) {
+        return {
+          label,
+          data,
+          backgroundColor: color + 'bb',
+          borderColor: color,
+          borderWidth: 1,
+          borderRadius: 3,
+        };
+      }
+
+      // ── PRs Total ──────────────────────────────────────────────────────────────
+
+      new Chart(document.getElementById('chartPRsTotal'), {
+        type: 'bar',
+        data: {
+          labels: WEEKS,
+          datasets: TEAMS.map((t, i) => barDataset(t, prsMerged[t], COLORS[i])),
+        },
+        options: {...baseChartOpts(true)},
+      });
+
+      // ── PRs per Person ─────────────────────────────────────────────────────────
+
+      new Chart(document.getElementById('chartPRsPerPerson'), {
+        type: 'line',
+        data: {
+          labels: WEEKS,
+          datasets: TEAMS.map((t, i) =>
+            lineDataset(t, prsPerPerson[t], COLORS[i])
+          ),
+        },
+        options: baseChartOpts(),
+      });
+
+      // ── Agent Requests ─────────────────────────────────────────────────────────
+
+      new Chart(document.getElementById('chartAgentReqs'), {
+        type: 'line',
+        data: {
+          labels: WEEKS,
+          datasets: TEAMS.map((t, i) =>
+            lineDataset(t, agentReqs[t], COLORS[i])
+          ),
+        },
+        options: baseChartOpts(),
+      });
+
+      // ── Adoption bar chart ─────────────────────────────────────────────────────
+
+      new Chart(document.getElementById('chartAdoption'), {
+        type: 'bar',
+        data: {
+          labels: TEAMS,
+          datasets: [
+            {
+              label: 'Cursor Active (30d %)',
+              data: adoptionData.map((d) => d.pct),
+              backgroundColor: adoptionData.map((d) =>
+                d.pct >= 50
+                  ? '#34d39988'
+                  : d.pct > 0
+                    ? '#fbbf2488'
+                    : '#7a8ba388'
+              ),
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          ...baseChartOpts(),
+          scales: {
+            x: {
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+              },
+              grid: {color: '#252e3d'},
+            },
+            y: {
+              min: 0,
+              max: 100,
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+                callback: (v) => v + '%',
+              },
+              grid: {color: '#252e3d'},
+            },
+          },
+          plugins: {legend: {display: false}},
+        },
+      });
+
+      // ── Innovation ratio ──────────────────────────────────────────────────────
+
+      new Chart(document.getElementById('chartInnovation'), {
+        type: 'line',
+        data: {
+          labels: WEEKS,
+          datasets: TEAMS.map((t, i) =>
+            lineDataset(t, innovationPct[t], COLORS[i])
+          ),
+        },
+        options: {
+          ...baseChartOpts(),
+          scales: {
+            x: {
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+              },
+              grid: {color: '#252e3d'},
+            },
+            y: {
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+                callback: (v) => v + '%',
+              },
+              grid: {color: '#252e3d'},
+            },
+          },
+        },
+      });
+
+      // ── Re-review rate ─────────────────────────────────────────────────────────
+
+      new Chart(document.getElementById('chartReReview'), {
+        type: 'bar',
+        data: {
+          labels: WEEKS,
+          datasets: TEAMS.map((t, i) =>
+            barDataset(t, reReviewRate[t], COLORS[i])
+          ),
+        },
+        options: {
+          ...baseChartOpts(),
+          scales: {
+            x: {
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+              },
+              grid: {color: '#252e3d'},
+            },
+            y: {
+              ticks: {
+                color: '#7a8ba3',
+                font: {size: 10, family: 'IBM Plex Mono'},
+                callback: (v) => v + '%',
+              },
+              grid: {color: '#252e3d'},
+            },
+          },
+        },
+      });
+
+      // ── Adoption table ─────────────────────────────────────────────────────────
+
+      const tbody = document.getElementById('adoptionTable');
+      adoptionData.forEach((d) => {
+        const pct = d.pct;
+        const cls = pct >= 50 ? 'high' : pct > 0 ? 'mid' : 'low';
+        const clr = pct >= 50 ? 'up' : pct > 0 ? '' : 'neutral';
+        tbody.innerHTML += `
+    <tr>
+      <td class="team-name">${d.team}</td>
+      <td class="num">${d.size}</td>
+      <td class="num">${d.users} / ${d.size}</td>
+      <td>
+        <div class="adopt-bar">
+          <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
+          <span class="num ${clr}" style="font-size:12px;min-width:32px">${pct}%</span>
+        </div>
+      </td>
+      <td class="num ${d.total > 500 ? 'up' : ''}">${d.total.toLocaleString()}</td>
+      ${d.w.map((v) => `<td class="num">${v}</td>`).join('')}
+      <td><span class="badge ${pct >= 50 ? 'badge-green' : pct > 0 ? 'badge-yellow' : 'badge-blue'}" style="white-space:nowrap">${d.status}</span></td>
+    </tr>`;
+      });
+
+      // ── Speed table ────────────────────────────────────────────────────────────
+
+      const stbody = document.getElementById('speedTable');
+      speedTable.forEach((row, i) => {
+        const trendCls = row.trend.startsWith('↑')
+          ? 'up'
+          : row.trend.startsWith('↓')
+            ? 'down'
+            : 'neutral';
+        stbody.innerHTML += `
+    <tr>
+      <td class="team-name">${row.team}</td>
+      ${row.data.map(([prs, ppp]) => `<td class="num">${prs}</td><td class="num ${ppp >= 5 ? 'up' : ''}">${ppp}</td>`).join('')}
+      <td class="num" style="font-weight:700;color:#fff">${row.total}</td>
+      <td class="num ${trendCls}">${row.trend}</td>
+    </tr>`;
+      });
+    </script>
+  </body>
+</html>
