@@ -66,11 +66,31 @@ export interface PRRecord {
   isAgentic: boolean;
 }
 
+export type AgenticTier =
+  | 'insufficient_data' // < 4 PRs in window — sample too small to classify
+  | 'not_detected' // 0% agentic
+  | 'exploring' // 1–29%
+  | 'adopting' // 30–59%
+  | 'full_agentic'; // 60%+
+
+export const AGENTIC_TIER_LABELS: Record<AgenticTier, string> = {
+  insufficient_data: 'Insufficient Data',
+  not_detected: 'Not Detected',
+  exploring: 'Exploring',
+  adopting: 'Adopting',
+  full_agentic: 'Full-Agentic',
+};
+
+/** Minimum PRs required in the window before a tier is assigned. */
+export const MIN_PRS_FOR_CLASSIFICATION = 4;
+
 export interface AgenticStats {
   total: number;
   agentic: number;
   agenticRate: number;
-  /** Full-agentic: rate > 50% */
+  /** 4-tier classification; replaces the old binary isFullAgentic */
+  tier: AgenticTier;
+  /** Backward-compat shorthand — true when tier === 'full_agentic' */
   isFullAgentic: boolean;
   /** Per-provider active user counts for the week (from DX warehouse) */
   providerBreakdown?: Record<string, number>;

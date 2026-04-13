@@ -10,6 +10,7 @@
  *   - CI failure rates (Buildkite)
  */
 
+import {computeTier} from './agentic-detector';
 import {
   type AIProviderUsageRow,
   type CursorUsageRow,
@@ -190,12 +191,16 @@ function buildWeekSnapshots(
       adoptionPct = cursor?.adoptionPct ?? 0;
     }
 
+    const agenticRate = adoptionPct / 100;
+    const tier = computeTier(prsMerged, agenticRate);
+
     const agenticStats: AgenticStats = {
       total: prsMerged,
       // Proxy: team members using any AI agent tool × PR share
-      agentic: Math.round((adoptionPct / 100) * prsMerged),
-      agenticRate: adoptionPct / 100,
-      isFullAgentic: adoptionPct > 50,
+      agentic: Math.round(agenticRate * prsMerged),
+      agenticRate,
+      tier,
+      isFullAgentic: tier === 'full_agentic',
       providerBreakdown,
     };
 
