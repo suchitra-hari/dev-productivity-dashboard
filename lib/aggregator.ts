@@ -11,6 +11,7 @@
  */
 
 import {
+  type AIProviderUsageRow,
   type CursorUsageRow,
   type JiraStatsRow,
   type PRThroughputRow,
@@ -40,6 +41,8 @@ export interface AggregatorInput {
   rosters: TeamRoster[];
   prThroughput: PRThroughputRow[];
   cursorUsage: CursorUsageRow[];
+  /** Multi-provider AI adoption rows from DX custom namespace (optional — falls back to cursorUsage) */
+  aiProviderUsage?: AIProviderUsageRow[];
   jiraStats: JiraStatsRow[];
   reReviewRates: ReReviewRow[];
   core4Scores: Map<TeamName, Record<string, DXIScore>>;
@@ -53,6 +56,7 @@ export function aggregate(input: AggregatorInput): ProductivityReport {
     rosters,
     prThroughput,
     cursorUsage,
+    aiProviderUsage = [],
     jiraStats,
     reReviewRates,
     core4Scores,
@@ -75,6 +79,7 @@ export function aggregate(input: AggregatorInput): ProductivityReport {
     const weekSnapshots = buildWeekSnapshots(teamName, weeks, {
       prThroughput,
       cursorUsage,
+      aiProviderUsage,
       jiraStats,
       reReviewRates,
       core4Scores,
@@ -130,6 +135,7 @@ export function aggregate(input: AggregatorInput): ProductivityReport {
 interface SignalData {
   prThroughput: PRThroughputRow[];
   cursorUsage: CursorUsageRow[];
+  aiProviderUsage: AIProviderUsageRow[];
   jiraStats: JiraStatsRow[];
   reReviewRates: ReReviewRow[];
   core4Scores: Map<TeamName, Record<string, DXIScore>>;
@@ -155,17 +161,42 @@ function buildWeekSnapshots(
     const activeAuthors = pr?.activeAuthors ?? 0;
     const prsPerPerson = pr?.prsPerPerson ?? 0;
 
-    // Agentic stats from Cursor usage
+    // Agentic stats — prefer multi-provider DX data, fall back to Cursor-only
     const cursorActiveUsers = cursor?.cursorActiveUsers ?? 0;
     const agentRequests = cursor?.agentRequests ?? 0;
-    const adoptionPct = cursor?.adoptionPct ?? 0;
+
+    const providerRows = signals.aiProviderUsage.filter(
+      (r) => r.teamName === teamName && weekStartMatches(r.weekStart, week.start)
+    );
+
+    let adoptionPct: number;
+    let providerBreakdown: Record<string, number> | undefined;
+
+    if (providerRows.length > 0) {
+      // Multi-provider: unique active users across all tools / team size
+      const teamSize = providerRows[0].teamSize;
+      const providerMap: Record<string, number> = {};
+      for (const row of providerRows) {
+        providerMap[row.provider] = row.activeUsers;
+      }
+      const totalActiveUsers = Math.min(
+        Object.values(providerMap).reduce((s, n) => s + n, 0),
+        teamSize
+      );
+      adoptionPct = teamSize > 0 ? (totalActiveUsers / teamSize) * 100 : 0;
+      providerBreakdown = providerMap;
+    } else {
+      // Cursor-only fallback
+      adoptionPct = cursor?.adoptionPct ?? 0;
+    }
 
     const agenticStats: AgenticStats = {
       total: prsMerged,
-      // Proxy: if any team member used agent mode in this week, count prs proportionally
+      // Proxy: team members using any AI agent tool × PR share
       agentic: Math.round((adoptionPct / 100) * prsMerged),
       agenticRate: adoptionPct / 100,
       isFullAgentic: adoptionPct > 50,
+      providerBreakdown,
     };
 
     const reReviewStats: ReReviewStats = {

@@ -72,6 +72,8 @@ export interface AgenticStats {
   agenticRate: number;
   /** Full-agentic: rate > 50% */
   isFullAgentic: boolean;
+  /** Per-provider active user counts for the week (from DX warehouse) */
+  providerBreakdown?: Record<string, number>;
 }
 
 export interface ReReviewStats {
@@ -103,6 +105,21 @@ export interface JiraStats {
   defectRatio: number;
   /** features / total */
   innovationRatio: number;
+}
+
+// ---------------------------------------------------------------------------
+// AI provider adoption signals (multi-tool: Cursor, Augment, Codex, etc.)
+// ---------------------------------------------------------------------------
+
+export interface AIProviderUsageRow {
+  teamId: number;
+  teamName: TeamName;
+  weekStart: string;
+  provider: 'cursor' | 'augment' | 'codex' | 'other';
+  activeUsers: number;
+  teamSize: number;
+  adoptionPct: number;
+  totalSessions: number;
 }
 
 // ---------------------------------------------------------------------------

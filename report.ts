@@ -45,6 +45,7 @@ import {collectCIStats, type BuildkiteCaller} from './lib/buildkite-collector';
 import {
   DX_TEAM_DISPLAY_NAMES,
   fetchCore4Scores,
+  fetchWeeklyAIProviderUsage,
   fetchWeeklyCursorUsage,
   fetchWeeklyJiraStats,
   fetchWeeklyPRThroughput,
@@ -228,17 +229,27 @@ async function main(): Promise<void> {
   // ---------------------------------------------------------------------------
 
   console.log('[report] Fetching Core4 DXI scores...');
-  const [core4Scores, prThroughput, cursorUsage, jiraStats, reReviewRates] =
-    await Promise.all([
-      fetchCore4Scores(dxCaller),
-      fetchWeeklyPRThroughput(dxCaller, windowStart, windowEnd),
-      fetchWeeklyCursorUsage(dxCaller, windowStart, windowEnd),
-      fetchWeeklyJiraStats(dxCaller, windowStart, windowEnd),
-      fetchWeeklyReReviewRates(dxCaller, windowStart, windowEnd),
-    ]);
+  const [
+    core4Scores,
+    prThroughput,
+    cursorUsage,
+    jiraStats,
+    reReviewRates,
+    aiProviderUsage,
+  ] = await Promise.all([
+    fetchCore4Scores(dxCaller),
+    fetchWeeklyPRThroughput(dxCaller, windowStart, windowEnd),
+    fetchWeeklyCursorUsage(dxCaller, windowStart, windowEnd),
+    fetchWeeklyJiraStats(dxCaller, windowStart, windowEnd),
+    fetchWeeklyReReviewRates(dxCaller, windowStart, windowEnd),
+    fetchWeeklyAIProviderUsage(dxCaller, windowStart, windowEnd).catch(
+      () => []
+    ),
+  ]);
 
   console.log(
-    `[report] PR rows: ${prThroughput.length}, Cursor rows: ${cursorUsage.length}, Jira rows: ${jiraStats.length}`
+    `[report] PR rows: ${prThroughput.length}, Cursor rows: ${cursorUsage.length}, ` +
+      `AI provider rows: ${aiProviderUsage.length}, Jira rows: ${jiraStats.length}`
   );
 
   // Remap DX team names to pillar names in collected rows
@@ -296,6 +307,7 @@ async function main(): Promise<void> {
     rosters,
     prThroughput,
     cursorUsage,
+    aiProviderUsage,
     jiraStats,
     reReviewRates,
     core4Scores,
