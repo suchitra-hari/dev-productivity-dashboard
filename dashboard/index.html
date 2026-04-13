@@ -748,7 +748,7 @@
           pct: 25,
           total: 114,
           w: [2, 8, 29, 75],
-          status: '🔵 Early',
+          status: '🔵 Exploring',
         },
         {
           team: 'Agent Loop',
@@ -757,7 +757,7 @@
           pct: 57,
           total: 672,
           w: [178, 122, 269, 103],
-          status: '🟢 Full-Agentic',
+          status: '🟡 Adopting',
         },
         {
           team: 'Delivery Loop',
@@ -766,7 +766,7 @@
           pct: 50,
           total: 2342,
           w: [416, 709, 817, 400],
-          status: '🟢 Full-Agentic',
+          status: '🟡 Adopting',
         },
         {
           team: 'Shared Services',
@@ -961,11 +961,13 @@
               label: 'Cursor Active (30d %)',
               data: adoptionData.map((d) => d.pct),
               backgroundColor: adoptionData.map((d) =>
-                d.pct >= 50
+                d.pct >= 60
                   ? '#34d39988'
-                  : d.pct > 0
+                  : d.pct >= 30
                     ? '#fbbf2488'
-                    : '#7a8ba388'
+                    : d.pct > 0
+                      ? '#4f8ef788'
+                      : '#7a8ba388'
               ),
               borderRadius: 4,
             },
@@ -1062,11 +1064,37 @@
 
       // ── Adoption table ─────────────────────────────────────────────────────────
 
+      function tierFromPct(pct) {
+        if (pct >= 60) return 'full_agentic';
+        if (pct >= 30) return 'adopting';
+        if (pct > 0)   return 'exploring';
+        return 'not_detected';
+      }
+      const tierBadgeClass = {
+        full_agentic: 'badge-green',
+        adopting:     'badge-yellow',
+        exploring:    'badge-blue',
+        not_detected: 'badge-neutral',
+      };
+      const tierBarClass = {
+        full_agentic: 'high',
+        adopting:     'mid',
+        exploring:    'mid',
+        not_detected: 'low',
+      };
+      const tierTextClass = {
+        full_agentic: 'up',
+        adopting:     '',
+        exploring:    '',
+        not_detected: 'neutral',
+      };
+
       const tbody = document.getElementById('adoptionTable');
       adoptionData.forEach((d) => {
         const pct = d.pct;
-        const cls = pct >= 50 ? 'high' : pct > 0 ? 'mid' : 'low';
-        const clr = pct >= 50 ? 'up' : pct > 0 ? '' : 'neutral';
+        const tier = tierFromPct(pct);
+        const cls = tierBarClass[tier];
+        const clr = tierTextClass[tier];
         tbody.innerHTML += `
     <tr>
       <td class="team-name">${d.team}</td>
@@ -1080,7 +1108,7 @@
       </td>
       <td class="num ${d.total > 500 ? 'up' : ''}">${d.total.toLocaleString()}</td>
       ${d.w.map((v) => `<td class="num">${v}</td>`).join('')}
-      <td><span class="badge ${pct >= 50 ? 'badge-green' : pct > 0 ? 'badge-yellow' : 'badge-blue'}" style="white-space:nowrap">${d.status}</span></td>
+      <td><span class="badge ${tierBadgeClass[tier]}" style="white-space:nowrap">${d.status}</span></td>
     </tr>`;
       });
 

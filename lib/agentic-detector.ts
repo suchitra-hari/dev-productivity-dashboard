@@ -12,7 +12,12 @@
  * .augment/ config directory references.
  */
 
-import {type AgenticStats, type PRRecord} from './types';
+import {
+  type AgenticStats,
+  type AgenticTier,
+  MIN_PRS_FOR_CLASSIFICATION,
+  type PRRecord,
+} from './types';
 
 // ---------------------------------------------------------------------------
 // Known agentic Co-Authored-By noreply addresses (commit-level signal)
@@ -94,17 +99,32 @@ export function detectAgentic(prs: PRRecord[]): PRRecord[] {
 }
 
 /**
+ * Maps total PR count + agentic rate to a 4-tier classification.
+ * Requires at least MIN_PRS_FOR_CLASSIFICATION PRs; below that returns
+ * 'insufficient_data' so small samples don't distort team-level reporting.
+ */
+export function computeTier(total: number, agenticRate: number): AgenticTier {
+  if (total < MIN_PRS_FOR_CLASSIFICATION) return 'insufficient_data';
+  if (agenticRate === 0) return 'not_detected';
+  if (agenticRate < 0.3) return 'exploring';
+  if (agenticRate < 0.6) return 'adopting';
+  return 'full_agentic';
+}
+
+/**
  * Computes aggregate agentic stats for a list of (annotated) PRs.
  */
 export function computeAgenticStats(prs: PRRecord[]): AgenticStats {
   const total = prs.length;
   const agentic = prs.filter((pr) => pr.isAgentic).length;
   const agenticRate = total > 0 ? agentic / total : 0;
+  const tier = computeTier(total, agenticRate);
   return {
     total,
     agentic,
     agenticRate,
-    isFullAgentic: agenticRate > 0.5,
+    tier,
+    isFullAgentic: tier === 'full_agentic',
   };
 }
 

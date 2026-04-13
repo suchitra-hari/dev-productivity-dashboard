@@ -17,7 +17,14 @@
 import {readFileSync} from 'fs';
 import {join} from 'path';
 
-import {type ProductivityReport, type TeamName, TEAM_NAMES} from './types';
+import {computeTier} from './agentic-detector';
+import {
+  AGENTIC_TIER_LABELS,
+  type AgenticTier,
+  type ProductivityReport,
+  type TeamName,
+  TEAM_NAMES,
+} from './types';
 
 const TEMPLATE_PATH = join(__dirname, '../dashboard/index.html');
 
@@ -156,7 +163,7 @@ function buildAdoptionData(report: ProductivityReport): AdoptionEntry[] {
       pct: overallPct,
       total: totalAgentReqs,
       w: agentReqsByWeek,
-      status: agenticBadge(teamReport.overallAgenticRate),
+      status: agenticBadge(computeTier(teamReport.totalPRs, teamReport.overallAgenticRate)),
     };
   });
 }
@@ -213,11 +220,15 @@ interface SpeedEntry {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function agenticBadge(rate: number): string {
-  if (rate >= 0.5) return '🟢 Full-Agentic';
-  if (rate >= 0.25) return '🟡 Adopting';
-  if (rate > 0) return '🔵 Early';
-  return '⚪ Not Detected';
+function agenticBadge(tier: AgenticTier): string {
+  const icons: Record<AgenticTier, string> = {
+    insufficient_data: '⚫',
+    not_detected: '⚪',
+    exploring: '🔵',
+    adopting: '🟡',
+    full_agentic: '🟢',
+  };
+  return `${icons[tier]} ${AGENTIC_TIER_LABELS[tier]}`;
 }
 
 /** Converts a WeekWindow label like "W1 (Mar 14–Mar 20)" → "W1 Mar 14" */

@@ -13,7 +13,10 @@
  *   ## Notes & Methodology
  */
 
+import {computeTier} from './agentic-detector';
 import {
+  AGENTIC_TIER_LABELS,
+  type AgenticTier,
   type ProductivityReport,
   type TeamName,
   type TeamReport,
@@ -43,11 +46,15 @@ function num(v: number, decimals = 1): string {
   return v.toFixed(decimals);
 }
 
-function agenticBadge(rate: number): string {
-  if (rate >= 0.5) return '🟢 Full-Agentic';
-  if (rate >= 0.25) return '🟡 Adopting';
-  if (rate > 0) return '🔵 Early';
-  return '⚪ Not Detected';
+function agenticBadge(tier: AgenticTier): string {
+  const icons: Record<AgenticTier, string> = {
+    insufficient_data: '⚫',
+    not_detected: '⚪',
+    exploring: '🔵',
+    adopting: '🟡',
+    full_agentic: '🟢',
+  };
+  return `${icons[tier]} ${AGENTIC_TIER_LABELS[tier]}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -208,7 +215,7 @@ function renderExecSummaryTable(teams: TeamReport[]): string {
     const defect = pct(t.avgDefectRatio);
     const innov = pct(t.avgInnovationRatio);
     const agPct = pct(t.overallAgenticRate);
-    const badge = agenticBadge(t.overallAgenticRate);
+    const badge = agenticBadge(computeTier(t.totalPRs, t.overallAgenticRate));
     return `| ${t.teamName} | ${totalPRs} | ${dxiScore} | ${defect} | ${innov} | ${agPct} ${badge} |`;
   });
   return [header, sep, ...rows].join('\n');
@@ -308,7 +315,7 @@ function renderRollupTable(teams: TeamReport[]): string {
       `| ${num(avgPPP)} ` +
       `| ${pct(t.avgDefectRatio)} ` +
       `| ${pct(t.avgInnovationRatio)} ` +
-      `| ${pct(t.overallAgenticRate)} ${agenticBadge(t.overallAgenticRate)} ` +
+      `| ${pct(t.overallAgenticRate)} ${agenticBadge(computeTier(t.totalPRs, t.overallAgenticRate))} ` +
       `| ${pct(t.avgCIFailureRate)} |`
     );
   });
