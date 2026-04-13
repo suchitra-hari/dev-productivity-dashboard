@@ -709,26 +709,26 @@
 
       const prsMerged = {
         'Design System': [7, 19, 27, 32],
-        'Build Loop': [5, 17, 30, 23],
-        'Agent Loop': [26, 41, 35, 44],
-        'Delivery Loop': [37, 62, 49, 29],
-        'Shared Services': [6, 4, 1, 5],
+        'Build Loop': [6, 17, 30, 23],
+        'Agent Loop': [30, 41, 35, 44],
+        'Delivery Loop': [38, 62, 49, 29],
+        'Shared Services': [7, 4, 1, 5],
       };
 
       const prsPerPerson = {
-        'Design System': [3.5, 6.3, 9.0, 10.7],
-        'Build Loop': [1.7, 3.4, 6.0, 7.7],
-        'Agent Loop': [2.9, 4.1, 3.2, 4.9],
-        'Delivery Loop': [6.2, 12.4, 8.2, 4.1],
-        'Shared Services': [1.5, 1.3, 1.0, 2.5],
+        'Design System': [3.5, 6.33, 9.0, 10.67],
+        'Build Loop': [2.0, 3.4, 6.0, 7.67],
+        'Agent Loop': [2.73, 4.1, 3.18, 4.89],
+        'Delivery Loop': [6.33, 12.4, 8.17, 4.14],
+        'Shared Services': [1.75, 1.33, 1.0, 2.5],
       };
 
       const agentReqs = {
-        'Design System': [59, 228, 371, 33],
+        'Design System': [78, 228, 371, 33],
         'Build Loop': [2, 8, 29, 75],
-        'Agent Loop': [178, 122, 269, 103],
-        'Delivery Loop': [416, 709, 817, 400],
-        'Shared Services': [97, 78, 95, 163],
+        'Agent Loop': [195, 122, 269, 103],
+        'Delivery Loop': [436, 709, 817, 400],
+        'Shared Services': [131, 78, 95, 163],
       };
 
       const adoptionData = [
@@ -737,8 +737,8 @@
           size: 4,
           users: 4,
           pct: 100,
-          total: 691,
-          w: [59, 228, 371, 33],
+          total: 710,
+          w: [78, 228, 371, 33],
           status: '🟢 Full-Agentic',
         },
         {
@@ -755,8 +755,8 @@
           size: 14,
           users: 8,
           pct: 57,
-          total: 672,
-          w: [178, 122, 269, 103],
+          total: 689,
+          w: [195, 122, 269, 103],
           status: '🟡 Adopting',
         },
         {
@@ -764,8 +764,8 @@
           size: 8,
           users: 4,
           pct: 50,
-          total: 2342,
-          w: [416, 709, 817, 400],
+          total: 2362,
+          w: [436, 709, 817, 400],
           status: '🟡 Adopting',
         },
         {
@@ -773,8 +773,8 @@
           size: 5,
           users: 3,
           pct: 60,
-          total: 433,
-          w: [97, 78, 95, 163],
+          total: 467,
+          w: [131, 78, 95, 163],
           status: '🟢 Full-Agentic',
         },
       ];
@@ -782,16 +782,16 @@
       const innovationPct = {
         'Design System': [0, 0, 2.7, 5.3],
         'Build Loop': [10.5, 4.2, 2.2, 0],
-        'Agent Loop': [16.7, 4.3, 41.4, 14.3],
-        'Delivery Loop': [83.9, 48.1, 42.9, 48.3],
+        'Agent Loop': [14.8, 4.3, 41.4, 14.3],
+        'Delivery Loop': [84.5, 48.1, 42.9, 48.3],
         'Shared Services': [0, 16.7, 10.3, 11.1],
       };
 
       const reReviewRate = {
         'Design System': [0, 0, 0, 3.1],
-        'Build Loop': [0, 0, 3.3, 0],
-        'Agent Loop': [15.4, 7.3, 5.7, 11.4],
-        'Delivery Loop': [5.4, 3.2, 2.0, 6.9],
+        'Build Loop': [16.7, 0, 3.3, 0],
+        'Agent Loop': [13.3, 7.3, 5.7, 11.4],
+        'Delivery Loop': [7.9, 3.2, 2.0, 6.9],
         'Shared Services': [0, 0, 0, 20.0],
       };
 
@@ -800,9 +800,9 @@
           team: 'Design System',
           data: [
             [7, 3.5],
-            [19, 6.3],
+            [19, 6.33],
             [27, 9.0],
-            [32, 10.7],
+            [32, 10.67],
           ],
           total: 85,
           trend: '↑ Rising',
@@ -810,45 +810,45 @@
         {
           team: 'Build Loop',
           data: [
-            [5, 1.7],
+            [6, 2.0],
             [17, 3.4],
             [30, 6.0],
-            [23, 7.7],
+            [23, 7.67],
           ],
-          total: 75,
+          total: 76,
           trend: '↑ Rising',
         },
         {
           team: 'Agent Loop',
           data: [
-            [26, 2.9],
+            [30, 2.73],
             [41, 4.1],
-            [35, 3.2],
-            [44, 4.9],
+            [35, 3.18],
+            [44, 4.89],
           ],
-          total: 146,
+          total: 150,
           trend: '↑ Rising',
         },
         {
           team: 'Delivery Loop',
           data: [
-            [37, 6.2],
+            [38, 6.33],
             [62, 12.4],
-            [49, 8.2],
-            [29, 4.1],
+            [49, 8.17],
+            [29, 4.14],
           ],
-          total: 177,
+          total: 178,
           trend: '↓ Falling',
         },
         {
           team: 'Shared Services',
           data: [
-            [6, 1.5],
-            [4, 1.3],
+            [7, 1.75],
+            [4, 1.33],
             [1, 1.0],
             [5, 2.5],
           ],
-          total: 16,
+          total: 17,
           trend: '↑ Rising',
         },
       ];
