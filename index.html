@@ -572,7 +572,7 @@
       <section>
         <h2>PR Review Times by Risk Label (last 30 days)</h2>
         <p style="color:#7a8ba3;font-size:12px;margin:-8px 0 12px">
-          Time from PR open → first review. Longest times often reflect older backlog PRs recently merged.
+          Time from PR open → first review. p25/p50/p75/p95 percentiles — p95 tail values may reflect older backlog PRs recently merged.
           Data source: <code>risk-assessment: low / medium / high</code> GitHub labels.
         </p>
         <div class="table-wrap">
@@ -582,9 +582,10 @@
                 <th>Team</th>
                 <th>Risk Level</th>
                 <th style="text-align:center">PRs</th>
-                <th>Shortest Review</th>
-                <th>Median Review</th>
-                <th>Longest Review</th>
+                <th>p25 (Fast 25%)</th>
+                <th>Median (p50)</th>
+                <th>p75 (Slow 25%)</th>
+                <th>p95 (Tail)</th>
               </tr>
             </thead>
             <tbody>
@@ -592,75 +593,85 @@
                 <td class="team-name" rowspan="2">Design System</td>
                 <td><span class="badge badge-green">🟢 Low</span></td>
                 <td class="num">78</td>
-                <td class="num up">1h</td>
+                <td class="num up">1d 1h</td>
                 <td class="num">3d 1h</td>
-                <td class="num">643d</td>
+                <td class="num">44d 10h</td>
+                <td class="num">282d 13h</td>
               </tr>
               <tr>
                 <td><span class="badge badge-yellow">🟡 Medium</span></td>
                 <td class="num">3</td>
-                <td class="num up">16h</td>
-                <td class="num">1d 1h</td>
+                <td class="num up">20h</td>
+                <td class="num up">1d 1h</td>
+                <td class="num up">1d 1h</td>
                 <td class="num">1d 2h</td>
               </tr>
               <tr>
                 <td class="team-name" rowspan="3">Build Loop</td>
                 <td><span class="badge badge-green">🟢 Low</span></td>
                 <td class="num">67</td>
-                <td class="num up">26m</td>
+                <td class="num up">8h</td>
                 <td class="num">4d 14h</td>
-                <td class="num">708d</td>
+                <td class="num">69d 18h</td>
+                <td class="num">340d 15h</td>
               </tr>
               <tr>
                 <td><span class="badge badge-yellow">🟡 Medium</span></td>
                 <td class="num">8</td>
-                <td class="num up">8h</td>
+                <td class="num">7d 18h</td>
                 <td class="num">18d 3h</td>
-                <td class="num">166d</td>
+                <td class="num">37d 5h</td>
+                <td class="num">122d 21h</td>
               </tr>
               <tr>
                 <td><span class="badge badge-red">🔴 High</span></td>
                 <td class="num">2</td>
-                <td class="num up">5h</td>
+                <td class="num">27d 13h</td>
                 <td class="num">54d 21h</td>
-                <td class="num">109d 13h</td>
+                <td class="num">82d 3h</td>
+                <td class="num">104d</td>
               </tr>
               <tr>
                 <td class="team-name" rowspan="3">Delivery Loop</td>
                 <td><span class="badge badge-green">🟢 Low</span></td>
                 <td class="num">70</td>
-                <td class="num up">22m</td>
+                <td class="num up">18h</td>
                 <td class="num">7d 14h</td>
-                <td class="num">706d</td>
+                <td class="num">32d 18h</td>
+                <td class="num">391d</td>
               </tr>
               <tr>
                 <td><span class="badge badge-yellow">🟡 Medium</span></td>
                 <td class="num">3</td>
-                <td class="num">67d 4h</td>
+                <td class="num">135d 6h</td>
                 <td class="num">203d 6h</td>
-                <td class="num">758d 18h</td>
+                <td class="num">480d 20h</td>
+                <td class="num">702d 21h</td>
               </tr>
               <tr>
                 <td><span class="badge badge-red">🔴 High</span></td>
                 <td class="num">3</td>
-                <td class="num up">44m</td>
+                <td class="num up">1d 11h</td>
                 <td class="num up">3d 1h</td>
-                <td class="num">3d 13h</td>
+                <td class="num up">3d 7h</td>
+                <td class="num up">3d 12h</td>
               </tr>
               <tr>
                 <td class="team-name" rowspan="2">Shared Services</td>
                 <td><span class="badge badge-green">🟢 Low</span></td>
                 <td class="num">7</td>
-                <td class="num up">20h</td>
+                <td class="num up">1d 6h</td>
                 <td class="num">8d 4h</td>
-                <td class="num">408d</td>
+                <td class="num">223d 3h</td>
+                <td class="num">366d 15h</td>
               </tr>
               <tr>
                 <td><span class="badge badge-yellow">🟡 Medium</span></td>
                 <td class="num">11</td>
-                <td class="num up">1h</td>
+                <td class="num up">17h</td>
                 <td class="num">6d 22h</td>
-                <td class="num">190d</td>
+                <td class="num">30d 5h</td>
+                <td class="num">173d</td>
               </tr>
             </tbody>
           </table>
