@@ -163,6 +163,10 @@
         background: rgba(248, 113, 113, 0.15);
         color: var(--red);
       }
+      #riskTable td[rowspan] {
+        vertical-align: middle;
+        border-right: 1px solid #252e3d;
+      }
       .badge-blue {
         background: rgba(79, 142, 247, 0.15);
         color: var(--accent);
@@ -560,6 +564,105 @@
               </tr>
             </thead>
             <tbody id="adoptionTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Risk-label review times table ── -->
+      <section>
+        <h2>PR Review Times by Risk Label (last 30 days)</h2>
+        <p style="color:#7a8ba3;font-size:12px;margin:-8px 0 12px">
+          Time from PR open → first review. Longest times often reflect older backlog PRs recently merged.
+          Data source: <code>risk-assessment: low / medium / high</code> GitHub labels.
+        </p>
+        <div class="table-wrap">
+          <table id="riskTable">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Risk Level</th>
+                <th style="text-align:center">PRs</th>
+                <th>Shortest Review</th>
+                <th>Median Review</th>
+                <th>Longest Review</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="team-name" rowspan="2">Design System</td>
+                <td><span class="badge badge-green">🟢 Low</span></td>
+                <td class="num">78</td>
+                <td class="num up">1h</td>
+                <td class="num">3d 1h</td>
+                <td class="num">643d</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-yellow">🟡 Medium</span></td>
+                <td class="num">3</td>
+                <td class="num up">16h</td>
+                <td class="num">1d 1h</td>
+                <td class="num">1d 2h</td>
+              </tr>
+              <tr>
+                <td class="team-name" rowspan="3">Build Loop</td>
+                <td><span class="badge badge-green">🟢 Low</span></td>
+                <td class="num">67</td>
+                <td class="num up">26m</td>
+                <td class="num">4d 14h</td>
+                <td class="num">708d</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-yellow">🟡 Medium</span></td>
+                <td class="num">8</td>
+                <td class="num up">8h</td>
+                <td class="num">18d 3h</td>
+                <td class="num">166d</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-red">🔴 High</span></td>
+                <td class="num">2</td>
+                <td class="num up">5h</td>
+                <td class="num">54d 21h</td>
+                <td class="num">109d 13h</td>
+              </tr>
+              <tr>
+                <td class="team-name" rowspan="3">Delivery Loop</td>
+                <td><span class="badge badge-green">🟢 Low</span></td>
+                <td class="num">70</td>
+                <td class="num up">22m</td>
+                <td class="num">7d 14h</td>
+                <td class="num">706d</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-yellow">🟡 Medium</span></td>
+                <td class="num">3</td>
+                <td class="num">67d 4h</td>
+                <td class="num">203d 6h</td>
+                <td class="num">758d 18h</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-red">🔴 High</span></td>
+                <td class="num">3</td>
+                <td class="num up">44m</td>
+                <td class="num up">3d 1h</td>
+                <td class="num">3d 13h</td>
+              </tr>
+              <tr>
+                <td class="team-name" rowspan="2">Shared Services</td>
+                <td><span class="badge badge-green">🟢 Low</span></td>
+                <td class="num">7</td>
+                <td class="num up">20h</td>
+                <td class="num">8d 4h</td>
+                <td class="num">408d</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-yellow">🟡 Medium</span></td>
+                <td class="num">11</td>
+                <td class="num up">1h</td>
+                <td class="num">6d 22h</td>
+                <td class="num">190d</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </section>
