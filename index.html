@@ -459,19 +459,6 @@
         </div>
       </section>
 
-      <section>
-        <h2>Agentic Adoption — Cursor Agent Requests per Week</h2>
-        <div class="chart-grid">
-          <div class="chart-card">
-            <h3>Cursor Agent Requests / Week</h3>
-            <canvas id="chartAgentReqs"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>30-Day Cursor Adoption by Team</h3>
-            <canvas id="chartAdoption"></canvas>
-          </div>
-        </div>
-      </section>
 
       <section>
         <h2>Quality — Defect & Innovation Ratios</h2>
@@ -914,67 +901,6 @@
           ),
         },
         options: baseChartOpts(),
-      });
-
-      // ── Agent Requests ─────────────────────────────────────────────────────────
-
-      new Chart(document.getElementById('chartAgentReqs'), {
-        type: 'line',
-        data: {
-          labels: WEEKS,
-          datasets: TEAMS.map((t, i) =>
-            lineDataset(t, agentReqs[t], COLORS[i])
-          ),
-        },
-        options: baseChartOpts(),
-      });
-
-      // ── Adoption bar chart ─────────────────────────────────────────────────────
-
-      new Chart(document.getElementById('chartAdoption'), {
-        type: 'bar',
-        data: {
-          labels: TEAMS,
-          datasets: [
-            {
-              label: 'Cursor Active (30d %)',
-              data: adoptionData.map((d) => d.pct),
-              backgroundColor: adoptionData.map((d) =>
-                d.pct >= 60
-                  ? '#34d39988'
-                  : d.pct >= 30
-                    ? '#fbbf2488'
-                    : d.pct > 0
-                      ? '#4f8ef788'
-                      : '#7a8ba388'
-              ),
-              borderRadius: 4,
-            },
-          ],
-        },
-        options: {
-          ...baseChartOpts(),
-          scales: {
-            x: {
-              ticks: {
-                color: '#7a8ba3',
-                font: {size: 10, family: 'IBM Plex Mono'},
-              },
-              grid: {color: '#252e3d'},
-            },
-            y: {
-              min: 0,
-              max: 100,
-              ticks: {
-                color: '#7a8ba3',
-                font: {size: 10, family: 'IBM Plex Mono'},
-                callback: (v) => v + '%',
-              },
-              grid: {color: '#252e3d'},
-            },
-          },
-          plugins: {legend: {display: false}},
-        },
       });
 
       // ── Innovation ratio ──────────────────────────────────────────────────────
