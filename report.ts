@@ -4,7 +4,7 @@
  * Developer Productivity Report
  *
  * Generates a weekly-chunked productivity report for the Developer Productivity
- * pillar (Design System, Build Loop, Agent Loop, Delivery Loop, Shared Services).
+ * pillar (Design System, Build Loop, Delivery Loop, Shared Services).
  *
  * Organized around DX's Core4:
  *   Speed        — PR throughput (PRs merged, PRs/person/week)
@@ -356,9 +356,7 @@ async function main(): Promise<void> {
 function remapTeamNames(rows: Array<{teamName: string}>): void {
   for (const row of rows) {
     // DX warehouse uses "Spring Design System" → remap to "Design System"
-    // "Developer Platform" → "Agent Loop"
     if (row.teamName === 'Spring Design System') row.teamName = 'Design System';
-    if (row.teamName === 'Developer Platform') row.teamName = 'Agent Loop';
   }
 }
 

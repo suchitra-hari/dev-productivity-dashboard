@@ -8,9 +8,10 @@ A reusable TypeScript script that generates a weekly-chunked productivity report
 | --------------- | -------------------- | ----- |
 | Design System   | Spring Design System | 58    |
 | Build Loop      | Build Loop           | 50    |
-| Agent Loop      | Developer Platform   | 21    |
 | Delivery Loop   | Delivery Loop        | 23    |
 | Shared Services | Shared Services      | 3     |
+
+> **Agent Loop** is a new team not yet onboarded to DX. It will be added once a DX team ID is assigned.
 
 ## Core4 Dimensions
 

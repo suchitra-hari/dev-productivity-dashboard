@@ -78,7 +78,7 @@ export function renderReport(report: ProductivityReport): string {
     `**Generated:** ${new Date(generatedAt).toLocaleString('en-US', {timeZone: 'America/Los_Angeles'})} PT  `
   );
   lines.push(
-    `**Teams:** Design System · Build Loop · Agent Loop · Delivery Loop · Shared Services  `
+    `**Teams:** Design System · Build Loop · Delivery Loop · Shared Services  `
   );
   lines.push(
     `**Source:** DX Data Warehouse · GitHub · Jira · Cursor usage metrics`
@@ -188,9 +188,9 @@ export function renderReport(report: ProductivityReport): string {
   lines.push('**Team → DX mapping:**');
   lines.push('- Design System = Spring Design System (team_id 58)');
   lines.push('- Build Loop = Build Loop (team_id 50)');
-  lines.push('- Agent Loop = Developer Platform (team_id 21)');
   lines.push('- Delivery Loop = Delivery Loop (team_id 23)');
   lines.push('- Shared Services = Shared Services (team_id 3)');
+  lines.push('- Agent Loop = (new team, no DX team ID yet — excluded)');
   lines.push('');
   lines.push(
     '**DXI note:** Survey snapshots are collected every ~6 weeks. The Jan 11–21 snapshot is the most recent available. Next snapshot expected ~Feb 2026.'
