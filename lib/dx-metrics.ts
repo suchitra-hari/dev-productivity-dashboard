@@ -29,7 +29,7 @@ import {
 export const DX_TEAM_IDS: Record<string, number> = {
   'Build Loop': 50,
   'Delivery Loop': 23,
-  'Agent Loop': 21, // "Developer Platform" in DX
+  // 'Agent Loop' omitted — new team not yet in DX warehouse
   'Shared Services': 3,
   'Design System': 58, // "Spring Design System" in DX
 };
@@ -38,7 +38,6 @@ export const DX_TEAM_IDS: Record<string, number> = {
 export const DX_TEAM_DISPLAY_NAMES: Record<number, string> = {
   50: 'Build Loop',
   23: 'Delivery Loop',
-  21: 'Agent Loop',
   3: 'Shared Services',
   58: 'Design System',
 };

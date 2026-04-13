@@ -13,14 +13,12 @@
 export type TeamName =
   | 'Design System'
   | 'Build Loop'
-  | 'Agent Loop'
   | 'Delivery Loop'
   | 'Shared Services';
 
 export const TEAM_NAMES: TeamName[] = [
   'Design System',
   'Build Loop',
-  'Agent Loop',
   'Delivery Loop',
   'Shared Services',
 ];

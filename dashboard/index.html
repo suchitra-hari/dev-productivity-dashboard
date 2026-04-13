@@ -398,18 +398,18 @@
         <div class="stat-grid">
           <div class="stat-card">
             <span class="label">Total PRs Merged</span>
-            <span class="value">506</span>
-            <span class="sub">5 teams · 30 days</span>
+            <span class="value">356</span>
+            <span class="sub">4 teams · 30 days</span>
           </div>
           <div class="stat-card">
             <span class="label">Full-Agentic Teams</span>
-            <span class="value">4 / 5</span>
+            <span class="value">2 / 4</span>
             <span class="sub">&gt;60% any-AI adoption (Cursor + Claude)</span>
             <span class="badge badge-green">🟢 Accelerating</span>
           </div>
           <div class="stat-card">
             <span class="label">Total Agent Requests</span>
-            <span class="value">4,342</span>
+            <span class="value">3,653</span>
             <span class="sub">Cursor Agent · 30d</span>
           </div>
           <div class="stat-card">
@@ -701,7 +701,6 @@
       const TEAMS = [
         'Design System',
         'Build Loop',
-        'Agent Loop',
         'Delivery Loop',
         'Shared Services',
       ];
@@ -713,7 +712,6 @@
       const prsMerged = {
         'Design System': [7, 19, 27, 32],
         'Build Loop': [6, 17, 30, 23],
-        'Agent Loop': [30, 41, 35, 44],
         'Delivery Loop': [38, 62, 49, 29],
         'Shared Services': [7, 4, 1, 5],
       };
@@ -721,7 +719,6 @@
       const prsPerPerson = {
         'Design System': [3.5, 6.3, 9.0, 10.7],
         'Build Loop': [2.0, 3.4, 6.0, 7.7],
-        'Agent Loop': [2.7, 4.1, 3.2, 4.9],
         'Delivery Loop': [6.3, 12.4, 8.2, 4.1],
         'Shared Services': [1.75, 1.3, 1.0, 2.5],
       };
@@ -729,7 +726,6 @@
       const agentReqs = {
         'Design System': [78, 228, 371, 33],
         'Build Loop': [2, 8, 29, 75],
-        'Agent Loop': [195, 122, 269, 103],
         'Delivery Loop': [436, 709, 817, 400],
         'Shared Services': [131, 78, 95, 163],
       };
@@ -760,18 +756,6 @@
           claudePRs: 127,
         },
         {
-          team: 'Agent Loop',
-          size: 14,
-          users: 8,
-          pct: 57,
-          total: 689,
-          w: [195, 122, 269, 103],
-          status: '🟡 Adopting',
-          claudeUsers: 0,
-          claudeSessions: 0,
-          claudePRs: 0,
-        },
-        {
           team: 'Delivery Loop',
           size: 8,
           users: 4,
@@ -800,7 +784,6 @@
       const innovationPct = {
         'Design System': [0, 0, 2.7, 5.3],
         'Build Loop': [10.5, 4.2, 2.2, 0],
-        'Agent Loop': [14.8, 4.3, 41.4, 14.3],
         'Delivery Loop': [84.5, 48.1, 42.9, 48.3],
         'Shared Services': [0, 16.7, 10.3, 11.1],
       };
@@ -808,7 +791,6 @@
       const reReviewRate = {
         'Design System': [0, 0, 0, 6.1],
         'Build Loop': [0, 0, 0, 0],
-        'Agent Loop': [15.4, 7.3, 5.7, 11.4],
         'Delivery Loop': [5.4, 3.2, 2.0, 6.9],
         'Shared Services': [0, 0, 0, 20.0],
       };
@@ -834,17 +816,6 @@
             [23, 7.7],
           ],
           total: 76,
-          trend: '↑ Rising',
-        },
-        {
-          team: 'Agent Loop',
-          data: [
-            [30, 2.7],
-            [41, 4.1],
-            [35, 3.2],
-            [44, 4.9],
-          ],
-          total: 150,
           trend: '↑ Rising',
         },
         {
