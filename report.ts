@@ -44,6 +44,7 @@ import {aggregate, type AggregatorInput} from './lib/aggregator';
 import {collectCIStats, type BuildkiteCaller} from './lib/buildkite-collector';
 import {
   DX_TEAM_DISPLAY_NAMES,
+  fetchClaudeCodeUsage,
   fetchCore4Scores,
   fetchWeeklyAIProviderUsage,
   fetchWeeklyCursorUsage,
@@ -243,20 +244,21 @@ async function main(): Promise<void> {
     jiraStats,
     reReviewRates,
     aiProviderUsage,
+    claudeUsage,
   ] = await Promise.all([
     fetchCore4Scores(dxCaller),
     fetchWeeklyPRThroughput(dxCaller, windowStart, windowEnd),
     fetchWeeklyCursorUsage(dxCaller, windowStart, windowEnd),
     fetchWeeklyJiraStats(dxCaller, windowStart, windowEnd),
     fetchWeeklyReReviewRates(dxCaller, windowStart, windowEnd),
-    fetchWeeklyAIProviderUsage(dxCaller, windowStart, windowEnd).catch(
-      () => []
-    ),
+    fetchWeeklyAIProviderUsage(dxCaller, windowStart, windowEnd).catch(() => []),
+    fetchClaudeCodeUsage(dxCaller, windowStart, windowEnd).catch(() => []),
   ]);
 
   console.log(
     `[report] PR rows: ${prThroughput.length}, Cursor rows: ${cursorUsage.length}, ` +
-      `AI provider rows: ${aiProviderUsage.length}, Jira rows: ${jiraStats.length}`
+      `AI provider rows: ${aiProviderUsage.length}, Claude rows: ${claudeUsage.length}, ` +
+      `Jira rows: ${jiraStats.length}`
   );
 
   // Remap DX team names to pillar names in collected rows
@@ -326,7 +328,7 @@ async function main(): Promise<void> {
 
   let output: string;
   if (argv.html) {
-    output = renderHTML(report);
+    output = renderHTML(report, undefined, claudeUsage);
   } else if (argv.json) {
     output = JSON.stringify(report, null, 2);
   } else {

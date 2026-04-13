@@ -211,6 +211,63 @@ export async function fetchWeeklyCursorUsage(
 }
 
 /**
+ * Returns 30-day Claude Code usage totals per team from
+ * claude_code_daily_user_metrics + claude_code_daily_user_metrics_breakdowns.
+ * Falls back to [] if tables are unavailable.
+ */
+export async function fetchClaudeCodeUsage(
+  caller: DXWarehouseCaller,
+  startDate: string,
+  endDate: string
+): Promise<ClaudeCodeRow[]> {
+  const teamIds = Object.values(DX_TEAM_IDS).join(', ');
+
+  const sql = `
+    SELECT
+      t.id AS team_id,
+      t.name AS dx_team_name,
+      COUNT(DISTINCT ccm.email)               AS active_users,
+      SUM(b.num_sessions)                     AS total_sessions,
+      SUM(b.commits_by_claude_code)           AS commits_by_claude,
+      SUM(b.pull_requests_by_claude_code)     AS prs_by_claude,
+      SUM(b.lines_of_code_added)              AS lines_added
+    FROM claude_code_daily_user_metrics ccm
+    JOIN claude_code_daily_user_metrics_breakdowns b ON b.daily_user_metric_id = ccm.id
+    JOIN dx_users du ON LOWER(du.email) = LOWER(ccm.email)
+    JOIN dx_teams t  ON du.team_id = t.id
+    WHERE du.team_id IN (${teamIds})
+      AND du.deleted_at IS NULL
+      AND ccm.date >= '${startDate}'
+      AND ccm.date <= '${endDate}'
+      AND ccm.is_active = true
+    GROUP BY t.id, t.name
+    ORDER BY t.name
+  `;
+
+  let raw: string;
+  try {
+    raw = await caller.queryData(sql);
+  } catch (err) {
+    console.warn(`[dx-metrics] fetchClaudeCodeUsage failed — falling back to empty. (${err})`);
+    return [];
+  }
+
+  const rows = parseCSV(raw);
+  return rows.map((row) => ({
+    teamId: parseInt(String(row['team_id'] ?? '0')),
+    teamName:
+      (DX_TEAM_DISPLAY_NAMES[
+        parseInt(String(row['team_id'] ?? '0'))
+      ] as TeamName) ?? '',
+    activeUsers: parseInt(String(row['active_users'] ?? '0')),
+    totalSessions: parseInt(String(row['total_sessions'] ?? '0')),
+    commitsByClaude: parseInt(String(row['commits_by_claude'] ?? '0')),
+    prsByClaude: parseInt(String(row['prs_by_claude'] ?? '0')),
+    linesAdded: parseInt(String(row['lines_added'] ?? '0')),
+  }));
+}
+
+/**
  * Returns weekly AI tool adoption per team from the DX `custom` namespace,
  * covering all providers (Cursor, Augment Code, OpenAI Codex, etc.).
  *
@@ -466,6 +523,16 @@ export interface ReReviewRow {
   totalPRs: number;
   prsWithChangesRequested: number;
   reReviewedPRs: number;
+}
+
+export interface ClaudeCodeRow {
+  teamId: number;
+  teamName: TeamName;
+  activeUsers: number;
+  totalSessions: number;
+  commitsByClaude: number;
+  prsByClaude: number;
+  linesAdded: number;
 }
 
 // ---------------------------------------------------------------------------

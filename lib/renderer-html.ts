@@ -18,6 +18,7 @@ import {readFileSync} from 'fs';
 import {join} from 'path';
 
 import {computeTier} from './agentic-detector';
+import {type ClaudeCodeRow} from './dx-metrics';
 import {
   AGENTIC_TIER_LABELS,
   type AgenticTier,
@@ -34,7 +35,8 @@ const TEMPLATE_PATH = join(__dirname, '../dashboard/index.html');
 
 export function renderHTML(
   report: ProductivityReport,
-  templatePath = TEMPLATE_PATH
+  templatePath = TEMPLATE_PATH,
+  claudeUsage: ClaudeCodeRow[] = []
 ): string {
   let html = readFileSync(templatePath, 'utf-8');
 
@@ -53,7 +55,7 @@ export function renderHTML(
   );
 
   // Replace the data block
-  const dataBlock = buildDataBlock(report);
+  const dataBlock = buildDataBlock(report, claudeUsage);
   html = html.replace(
     /<!-- DATA_START -->[\s\S]*?<!-- DATA_END -->/,
     `<!-- DATA_START -->\n${dataBlock}\n      <!-- DATA_END -->`
@@ -66,7 +68,7 @@ export function renderHTML(
 // Data block builder
 // ---------------------------------------------------------------------------
 
-function buildDataBlock(report: ProductivityReport): string {
+function buildDataBlock(report: ProductivityReport, claudeUsage: ClaudeCodeRow[] = []): string {
   const weekLabels = report.weeks.map(shortWeekLabel);
 
   const prsMerged = buildTeamWeekMap(report, (snap) => snap.prsMerged);
@@ -78,7 +80,7 @@ function buildDataBlock(report: ProductivityReport): string {
     return typeof meta['_agentRequests'] === 'number' ? meta['_agentRequests'] : 0;
   });
 
-  const adoptionData = buildAdoptionData(report);
+  const adoptionData = buildAdoptionData(report, claudeUsage);
   const innovationPct = buildTeamWeekMap(report, (snap) =>
     parseFloat((snap.innovationRatio * 100).toFixed(1))
   );
@@ -134,7 +136,7 @@ function buildTeamWeekMap(
 // Adoption data
 // ---------------------------------------------------------------------------
 
-function buildAdoptionData(report: ProductivityReport): AdoptionEntry[] {
+function buildAdoptionData(report: ProductivityReport, claudeUsage: ClaudeCodeRow[] = []): AdoptionEntry[] {
   return report.teams.map((teamReport) => {
     const lastSnap = teamReport.weeks[teamReport.weeks.length - 1];
     const meta = (lastSnap?.agenticStats ?? {}) as Record<string, unknown>;
@@ -156,6 +158,8 @@ function buildAdoptionData(report: ProductivityReport): AdoptionEntry[] {
     const totalAgentReqs = agentReqsByWeek.reduce((s, n) => s + n, 0);
     const overallPct = Math.round(teamReport.overallAgenticRate * 100);
 
+    const claudeRow = claudeUsage.find((r) => r.teamName === teamReport.teamName);
+
     return {
       team: teamReport.teamName,
       size: teamSize,
@@ -164,6 +168,9 @@ function buildAdoptionData(report: ProductivityReport): AdoptionEntry[] {
       total: totalAgentReqs,
       w: agentReqsByWeek,
       status: agenticBadge(computeTier(teamReport.totalPRs, teamReport.overallAgenticRate)),
+      claudeUsers: claudeRow?.activeUsers ?? 0,
+      claudeSessions: claudeRow?.totalSessions ?? 0,
+      claudePRs: claudeRow?.prsByClaude ?? 0,
     };
   });
 }
@@ -176,6 +183,9 @@ interface AdoptionEntry {
   total: number;
   w: number[];
   status: string;
+  claudeUsers: number;
+  claudeSessions: number;
+  claudePRs: number;
 }
 
 // ---------------------------------------------------------------------------

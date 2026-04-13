@@ -404,7 +404,7 @@
           <div class="stat-card">
             <span class="label">Full-Agentic Teams</span>
             <span class="value">4 / 5</span>
-            <span class="sub">&gt;50% Cursor adoption</span>
+            <span class="sub">&gt;60% any-AI adoption (Cursor + Claude)</span>
             <span class="badge badge-green">🟢 Accelerating</span>
           </div>
           <div class="stat-card">
@@ -575,6 +575,9 @@
                 <th>W2 Reqs</th>
                 <th>W3 Reqs</th>
                 <th>W4 Reqs</th>
+                <th>Claude Users (30d)</th>
+                <th>Claude Sessions</th>
+                <th>Claude PRs</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -740,6 +743,9 @@
           total: 691,
           w: [59, 228, 371, 33],
           status: '🟢 Full-Agentic',
+          claudeUsers: 0,
+          claudeSessions: 0,
+          claudePRs: 0,
         },
         {
           team: 'Build Loop',
@@ -749,6 +755,9 @@
           total: 114,
           w: [2, 8, 29, 75],
           status: '🔵 Exploring',
+          claudeUsers: 8,
+          claudeSessions: 5621,
+          claudePRs: 127,
         },
         {
           team: 'Agent Loop',
@@ -758,6 +767,9 @@
           total: 672,
           w: [178, 122, 269, 103],
           status: '🟡 Adopting',
+          claudeUsers: 0,
+          claudeSessions: 0,
+          claudePRs: 0,
         },
         {
           team: 'Delivery Loop',
@@ -767,6 +779,9 @@
           total: 2342,
           w: [416, 709, 817, 400],
           status: '🟡 Adopting',
+          claudeUsers: 8,
+          claudeSessions: 909,
+          claudePRs: 32,
         },
         {
           team: 'Shared Services',
@@ -776,6 +791,9 @@
           total: 433,
           w: [97, 78, 95, 163],
           status: '🟢 Full-Agentic',
+          claudeUsers: 5,
+          claudeSessions: 97,
+          claudePRs: 1,
         },
       ];
 
@@ -1108,6 +1126,9 @@
       </td>
       <td class="num ${d.total > 500 ? 'up' : ''}">${d.total.toLocaleString()}</td>
       ${d.w.map((v) => `<td class="num">${v}</td>`).join('')}
+      <td class="num ${(d.claudeUsers ?? 0) > 0 ? 'up' : ''}">${d.claudeUsers ?? 0}</td>
+      <td class="num ${(d.claudeSessions ?? 0) > 500 ? 'up' : ''}">${(d.claudeSessions ?? 0).toLocaleString()}</td>
+      <td class="num ${(d.claudePRs ?? 0) > 20 ? 'up' : ''}">${d.claudePRs ?? 0}</td>
       <td><span class="badge ${tierBadgeClass[tier]}" style="white-space:nowrap">${d.status}</span></td>
     </tr>`;
       });
