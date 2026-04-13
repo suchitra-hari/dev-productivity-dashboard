@@ -53,6 +53,7 @@ import {
   type DXWarehouseCaller,
 } from './lib/dx-metrics';
 import {buildWeekWindows} from './lib/github-collector';
+import {renderHTML} from './lib/renderer-html';
 import {renderReport} from './lib/renderer';
 import {
   type CIStats,
@@ -88,6 +89,11 @@ const argv = yargs
     default: false,
     description: 'Output raw JSON data instead of markdown',
   })
+  .option('html', {
+    type: 'boolean',
+    default: false,
+    description: 'Regenerate dashboard/index.html with live data (writes to --output or dashboard/index.html)',
+  })
   .option('skip-ci', {
     type: 'boolean',
     default: false,
@@ -104,6 +110,7 @@ const argv = yargs
   start?: string;
   output?: string;
   json: boolean;
+  html: boolean;
   'skip-ci': boolean;
   'buildkite-org': string;
 };
@@ -318,13 +325,21 @@ async function main(): Promise<void> {
   const report = aggregate(input);
 
   let output: string;
-  if (argv.json) {
+  if (argv.html) {
+    output = renderHTML(report);
+  } else if (argv.json) {
     output = JSON.stringify(report, null, 2);
   } else {
     output = renderReport(report);
   }
 
-  if (argv.output) {
+  if (argv.html) {
+    const htmlOut =
+      argv.output ??
+      require('path').join(__dirname, 'dashboard/index.html');
+    writeFileSync(htmlOut, output, 'utf-8');
+    console.log(`[report] Dashboard written to ${htmlOut}`);
+  } else if (argv.output) {
     writeFileSync(argv.output, output, 'utf-8');
     console.log(`[report] Written to ${argv.output}`);
   } else {
