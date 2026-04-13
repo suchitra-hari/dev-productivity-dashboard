@@ -561,6 +561,7 @@
                 <th>Team Size</th>
                 <th>Claude Sessions</th>
                 <th>Claude PRs</th>
+                <th>Claude Users (30d)</th>
                 <th>Cursor Users (30d)</th>
                 <th>Adoption</th>
                 <th>Total Agent Reqs</th>
@@ -568,7 +569,6 @@
                 <th>W2 Reqs</th>
                 <th>W3 Reqs</th>
                 <th>W4 Reqs</th>
-                <th>Claude Users (30d)</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -1080,6 +1080,7 @@
       <td class="num">${d.size}</td>
       <td class="num ${(d.claudeSessions ?? 0) > 500 ? 'up' : ''}">${(d.claudeSessions ?? 0).toLocaleString()}</td>
       <td class="num ${(d.claudePRs ?? 0) > 20 ? 'up' : ''}">${d.claudePRs ?? 0}</td>
+      <td class="num ${(d.claudeUsers ?? 0) > 0 ? 'up' : ''}">${d.claudeUsers ?? 0}</td>
       <td class="num">${d.users} / ${d.size}</td>
       <td>
         <div class="adopt-bar">
@@ -1089,7 +1090,6 @@
       </td>
       <td class="num ${d.total > 500 ? 'up' : ''}">${d.total.toLocaleString()}</td>
       ${d.w.map((v) => `<td class="num">${v}</td>`).join('')}
-      <td class="num ${(d.claudeUsers ?? 0) > 0 ? 'up' : ''}">${d.claudeUsers ?? 0}</td>
       <td><span class="badge ${tierBadgeClass[tier]}" style="white-space:nowrap">${d.status}</span></td>
     </tr>`;
       });
