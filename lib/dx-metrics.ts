@@ -18,7 +18,12 @@
  *   58  = Spring Design System
  */
 
-import {type DXIScore, type Initiative, type TeamName} from './types';
+import {
+  type AIProviderUsageRow,
+  type DXIScore,
+  type Initiative,
+  type TeamName,
+} from './types';
 
 // Pillar team ID map — verified from DX `dx_teams` table
 export const DX_TEAM_IDS: Record<string, number> = {
@@ -203,6 +208,98 @@ export async function fetchWeeklyCursorUsage(
     totalApplies: parseInt(String(row['total_applies'] ?? '0')),
     totalAccepts: parseInt(String(row['total_accepts'] ?? '0')),
   }));
+}
+
+/**
+ * Returns weekly AI tool adoption per team from the DX `custom` namespace,
+ * covering all providers (Cursor, Augment Code, OpenAI Codex, etc.).
+ *
+ * Falls back to an empty array if the table doesn't exist yet so the rest
+ * of the report continues to run. Table name is discovered at runtime via
+ * information_schema if `custom.ai_tool_usage` is not found.
+ */
+export async function fetchWeeklyAIProviderUsage(
+  caller: DXWarehouseCaller,
+  startDate: string,
+  endDate: string
+): Promise<AIProviderUsageRow[]> {
+  const teamIds = Object.values(DX_TEAM_IDS).join(', ');
+
+  // Discover the correct table name in the custom schema on first call
+  const discoverySQL = `
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'custom'
+      AND table_name ILIKE '%ai%tool%'
+    LIMIT 5
+  `;
+
+  let tableName = 'custom.ai_tool_usage';
+  try {
+    const discoveryRaw = await caller.queryData(discoverySQL);
+    const discoveryRows = parseCSV(discoveryRaw);
+    if (discoveryRows.length > 0) {
+      tableName = `custom.${String(discoveryRows[0]['table_name'] ?? 'ai_tool_usage')}`;
+    }
+  } catch {
+    // Table discovery failed — proceed with default name, will catch below
+  }
+
+  const sql = `
+    SELECT
+      t.id AS team_id,
+      t.name AS dx_team_name,
+      DATE_TRUNC('week', atu.date)::date AS week_start,
+      atu.tool_name AS provider,
+      COUNT(DISTINCT atu.email) AS active_users,
+      COUNT(DISTINCT du.id) AS team_size,
+      ROUND(COUNT(DISTINCT atu.email)::numeric / NULLIF(COUNT(DISTINCT du.id), 0) * 100, 1) AS adoption_pct,
+      COUNT(*) AS total_sessions
+    FROM ${tableName} atu
+    JOIN dx_users du ON du.email = atu.email
+    JOIN dx_teams t ON du.team_id = t.id
+    WHERE du.team_id IN (${teamIds})
+      AND du.deleted_at IS NULL
+      AND atu.date >= '${startDate}'
+      AND atu.date < '${endDate}'
+    GROUP BY t.id, t.name, DATE_TRUNC('week', atu.date), atu.tool_name
+    ORDER BY t.name, week_start, provider
+  `;
+
+  let raw: string;
+  try {
+    raw = await caller.queryData(sql);
+  } catch (err) {
+    console.warn(
+      `[dx-metrics] fetchWeeklyAIProviderUsage: table "${tableName}" not available — ` +
+        `falling back to Cursor-only data. (${err})`
+    );
+    return [];
+  }
+
+  const rows = parseCSV(raw);
+  const knownProviders = new Set(['cursor', 'augment', 'codex']);
+
+  return rows.map((row) => {
+    const rawProvider = String(row['provider'] ?? '').toLowerCase();
+    const provider = knownProviders.has(rawProvider)
+      ? (rawProvider as AIProviderUsageRow['provider'])
+      : 'other';
+
+    return {
+      teamId: parseInt(String(row['team_id'] ?? '0')),
+      teamName:
+        (DX_TEAM_DISPLAY_NAMES[
+          parseInt(String(row['team_id'] ?? '0'))
+        ] as TeamName) ?? '',
+      weekStart: String(row['week_start'] ?? ''),
+      provider,
+      activeUsers: parseInt(String(row['active_users'] ?? '0')),
+      teamSize: parseInt(String(row['team_size'] ?? '0')),
+      adoptionPct: parseFloat(String(row['adoption_pct'] ?? '0')),
+      totalSessions: parseInt(String(row['total_sessions'] ?? '0')),
+    };
+  });
 }
 
 /**
