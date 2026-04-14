@@ -241,6 +241,15 @@ interface SpeedEntry {
 // Epics table builder (HTML injection)
 // ---------------------------------------------------------------------------
 
+function formatCycleHours(h: number): string {
+  if (h < 1) return '<1h';
+  if (h < 24) return `${Math.round(h)}h`;
+  let days = Math.floor(h / 24);
+  let hrs = Math.round(h % 24);
+  if (hrs === 24) { days++; hrs = 0; }
+  return hrs > 0 ? `${days}d ${hrs}h` : `${days}d`;
+}
+
 function buildEpicsHTML(rows: EpicAgenticRow[]): string {
   const teamOrder = ['Design System', 'Build Loop', 'Delivery Loop', 'Shared Services'];
   const teamGroups = new Map<string, EpicAgenticRow[]>();
@@ -268,6 +277,7 @@ function buildEpicsHTML(rows: EpicAgenticRow[]): string {
         // Strip emoji prefix from summary for cleaner rendering
         const summary = e.epicSummary.replace(/^[\p{Emoji}\s]+/u, '').trim();
         const jiraUrl = `https://webflow.atlassian.net/browse/${e.epicKey}`;
+        const cycleStr = formatCycleHours(e.medianCycleHours);
 
         return [
           `          <tr>`,
@@ -276,6 +286,7 @@ function buildEpicsHTML(rows: EpicAgenticRow[]): string {
           `            <td class="num">${e.totalPRs}</td>`,
           `            <td class="num">${e.agenticPRs}</td>`,
           `            <td><span class="badge ${pctClass}">${pctIcon} ${pct}%</span></td>`,
+          `            <td class="num">${cycleStr}</td>`,
           `          </tr>`,
         ].join('\n');
       })
@@ -291,6 +302,7 @@ function buildEpicsHTML(rows: EpicAgenticRow[]): string {
       `              <th style="text-align:center">Total PRs</th>`,
       `              <th style="text-align:center">Agentic PRs</th>`,
       `              <th>Agentic %</th>`,
+      `              <th>Median PR Cycle</th>`,
       `            </tr></thead>`,
       `            <tbody>`,
       teamRows,

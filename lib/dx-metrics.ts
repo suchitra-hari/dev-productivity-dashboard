@@ -517,7 +517,8 @@ export async function fetchEpicAgenticBreakdown(
         ji_epic.summary AS epic_summary,
         js.name AS epic_status,
         LOWER(du.email) AS author_email,
-        t.name AS team
+        t.name AS team,
+        EXTRACT(EPOCH FROM (gp.merged - gp.created)) / 3600.0 AS cycle_hours
       FROM github_pulls gp
       JOIN github_repositories r ON r.id = gp.repository_id
       JOIN github_users gu ON gp.user_id = gu.id
@@ -542,7 +543,8 @@ export async function fetchEpicAgenticBreakdown(
       ROUND(
         100.0 * COUNT(DISTINCT CASE WHEN cs.email IS NOT NULL OR cl.email IS NOT NULL THEN pr_id END)
         / NULLIF(COUNT(DISTINCT pr_id), 0)
-      ) AS agentic_pct
+      ) AS agentic_pct,
+      ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ep.cycle_hours)::numeric, 1) AS median_cycle_hours
     FROM epic_prs ep
     LEFT JOIN cursor_signal cs
       ON cs.email = ep.author_email
@@ -573,6 +575,7 @@ export async function fetchEpicAgenticBreakdown(
     totalPRs: parseInt(String(row['total_prs'] ?? '0')),
     agenticPRs: parseInt(String(row['agentic_prs'] ?? '0')),
     agenticPct: parseInt(String(row['agentic_pct'] ?? '0')),
+    medianCycleHours: parseFloat(String(row['median_cycle_hours'] ?? '0')),
   }));
 }
 

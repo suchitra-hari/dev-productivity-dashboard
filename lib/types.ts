@@ -152,6 +152,8 @@ export interface EpicAgenticRow {
   totalPRs: number;
   agenticPRs: number;
   agenticPct: number;
+  /** Median PR cycle time (open → merge) in hours */
+  medianCycleHours: number;
 }
 
 // ---------------------------------------------------------------------------
