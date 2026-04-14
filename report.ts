@@ -46,6 +46,7 @@ import {
   DX_TEAM_DISPLAY_NAMES,
   fetchClaudeCodeUsage,
   fetchCore4Scores,
+  fetchEpicAgenticBreakdown,
   fetchWeeklyAIProviderUsage,
   fetchWeeklyCursorUsage,
   fetchWeeklyJiraStats,
@@ -245,6 +246,7 @@ async function main(): Promise<void> {
     reReviewRates,
     aiProviderUsage,
     claudeUsage,
+    epicBreakdown,
   ] = await Promise.all([
     fetchCore4Scores(dxCaller),
     fetchWeeklyPRThroughput(dxCaller, windowStart, windowEnd),
@@ -253,12 +255,13 @@ async function main(): Promise<void> {
     fetchWeeklyReReviewRates(dxCaller, windowStart, windowEnd),
     fetchWeeklyAIProviderUsage(dxCaller, windowStart, windowEnd).catch(() => []),
     fetchClaudeCodeUsage(dxCaller, windowStart, windowEnd).catch(() => []),
+    fetchEpicAgenticBreakdown(dxCaller, windowStart, windowEnd).catch(() => []),
   ]);
 
   console.log(
     `[report] PR rows: ${prThroughput.length}, Cursor rows: ${cursorUsage.length}, ` +
       `AI provider rows: ${aiProviderUsage.length}, Claude rows: ${claudeUsage.length}, ` +
-      `Jira rows: ${jiraStats.length}`
+      `Jira rows: ${jiraStats.length}, Epic rows: ${epicBreakdown.length}`
   );
 
   // Remap DX team names to pillar names in collected rows
@@ -328,7 +331,7 @@ async function main(): Promise<void> {
 
   let output: string;
   if (argv.html) {
-    output = renderHTML(report, undefined, claudeUsage);
+    output = renderHTML(report, undefined, claudeUsage, epicBreakdown);
   } else if (argv.json) {
     output = JSON.stringify(report, null, 2);
   } else {

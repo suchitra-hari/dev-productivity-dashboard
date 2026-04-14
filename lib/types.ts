@@ -141,6 +141,20 @@ export interface AIProviderUsageRow {
 }
 
 // ---------------------------------------------------------------------------
+// Epic agentic breakdown
+// ---------------------------------------------------------------------------
+
+export interface EpicAgenticRow {
+  team: string;
+  epicKey: string;
+  epicSummary: string;
+  epicStatus: string;
+  totalPRs: number;
+  agenticPRs: number;
+  agenticPct: number;
+}
+
+// ---------------------------------------------------------------------------
 // DX signals
 // ---------------------------------------------------------------------------
 

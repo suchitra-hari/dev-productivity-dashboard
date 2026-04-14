@@ -21,6 +21,7 @@
 import {
   type AIProviderUsageRow,
   type DXIScore,
+  type EpicAgenticRow,
   type Initiative,
   type TeamName,
 } from './types';
@@ -465,6 +466,113 @@ export async function fetchWeeklyReReviewRates(
       String(row['prs_with_changes_requested'] ?? '0')
     ),
     reReviewedPRs: parseInt(String(row['re_reviewed_prs'] ?? '0')),
+  }));
+}
+
+/**
+ * Returns active epic agentic breakdown for the last 30 days.
+ *
+ * A PR is flagged "agentic" when its author had either:
+ *   a) Cursor commits in the same repo on any day the PR was open, OR
+ *   b) An active Claude Code session (is_active = true) on any day the PR was open.
+ *
+ * This is a directional proxy — it means "AI-active engineer during PR lifetime,"
+ * not proof that AI generated the code.
+ *
+ * Scope: epics with status In Progress or To Do that have ≥ 1 merged PR in window.
+ */
+export async function fetchEpicAgenticBreakdown(
+  caller: DXWarehouseCaller,
+  startDate: string,
+  endDate: string
+): Promise<EpicAgenticRow[]> {
+  const teamIds = Object.values(DX_TEAM_IDS).join(', ');
+
+  const sql = `
+    WITH cursor_signal AS (
+      SELECT DISTINCT
+        LOWER(user_email) AS email,
+        SPLIT_PART(repo_name, '/', 2) AS repo_short,
+        DATE(commit_timestamp) AS active_date
+      FROM cursor_commits
+      WHERE commit_timestamp >= '${startDate}'
+        AND commit_timestamp <= '${endDate}'
+    ),
+    claude_signal AS (
+      SELECT DISTINCT
+        LOWER(clm.email) AS email,
+        clm.date AS active_date
+      FROM claude_code_daily_user_metrics clm
+      WHERE clm.date >= '${startDate}'
+        AND clm.date <= '${endDate}'
+        AND clm.is_active = true
+    ),
+    epic_prs AS (
+      SELECT
+        gp.id AS pr_id,
+        gp.created,
+        gp.merged,
+        r.name AS repo_name,
+        ji_child.parent_key AS epic_key,
+        ji_epic.summary AS epic_summary,
+        js.name AS epic_status,
+        LOWER(du.email) AS author_email,
+        t.name AS team
+      FROM github_pulls gp
+      JOIN github_repositories r ON r.id = gp.repository_id
+      JOIN github_users gu ON gp.user_id = gu.id
+      JOIN dx_users du ON du.github_username = gu.login AND du.deleted_at IS NULL
+      JOIN dx_teams t ON du.team_id = t.id
+      LEFT JOIN jira_issues ji_child ON ji_child.key = gp.issue_tracker_key
+      LEFT JOIN jira_issues ji_epic ON ji_epic.key = ji_child.parent_key
+      LEFT JOIN jira_statuses js ON js.id = ji_epic.status_id
+      WHERE du.team_id IN (${teamIds})
+        AND gp.merged >= '${startDate}'
+        AND gp.merged <= '${endDate}'
+        AND ji_child.parent_key IS NOT NULL
+        AND js.name IN ('In Progress', 'To Do')
+    )
+    SELECT
+      team,
+      epic_key,
+      epic_summary,
+      epic_status,
+      COUNT(DISTINCT pr_id) AS total_prs,
+      COUNT(DISTINCT CASE WHEN cs.email IS NOT NULL OR cl.email IS NOT NULL THEN pr_id END) AS agentic_prs,
+      ROUND(
+        100.0 * COUNT(DISTINCT CASE WHEN cs.email IS NOT NULL OR cl.email IS NOT NULL THEN pr_id END)
+        / NULLIF(COUNT(DISTINCT pr_id), 0)
+      ) AS agentic_pct
+    FROM epic_prs ep
+    LEFT JOIN cursor_signal cs
+      ON cs.email = ep.author_email
+      AND cs.repo_short = ep.repo_name
+      AND cs.active_date BETWEEN DATE(ep.created) AND DATE(ep.merged)
+    LEFT JOIN claude_signal cl
+      ON cl.email = ep.author_email
+      AND cl.active_date BETWEEN DATE(ep.created) AND DATE(ep.merged)
+    GROUP BY team, epic_key, epic_summary, epic_status
+    HAVING COUNT(DISTINCT pr_id) >= 1
+    ORDER BY team, total_prs DESC
+  `;
+
+  let raw: string;
+  try {
+    raw = await caller.queryData(sql);
+  } catch (err) {
+    console.warn(`[dx-metrics] fetchEpicAgenticBreakdown failed — falling back to empty. (${err})`);
+    return [];
+  }
+
+  const rows = parseCSV(raw);
+  return rows.map((row) => ({
+    team: String(row['team'] ?? ''),
+    epicKey: String(row['epic_key'] ?? ''),
+    epicSummary: String(row['epic_summary'] ?? ''),
+    epicStatus: String(row['epic_status'] ?? ''),
+    totalPRs: parseInt(String(row['total_prs'] ?? '0')),
+    agenticPRs: parseInt(String(row['agentic_prs'] ?? '0')),
+    agenticPct: parseInt(String(row['agentic_pct'] ?? '0')),
   }));
 }
 

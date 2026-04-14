@@ -22,6 +22,7 @@ import {type ClaudeCodeRow} from './dx-metrics';
 import {
   AGENTIC_TIER_LABELS,
   type AgenticTier,
+  type EpicAgenticRow,
   type ProductivityReport,
   type TeamName,
   TEAM_NAMES,
@@ -36,7 +37,8 @@ const TEMPLATE_PATH = join(__dirname, '../dashboard/index.html');
 export function renderHTML(
   report: ProductivityReport,
   templatePath = TEMPLATE_PATH,
-  claudeUsage: ClaudeCodeRow[] = []
+  claudeUsage: ClaudeCodeRow[] = [],
+  epicBreakdown: EpicAgenticRow[] = []
 ): string {
   let html = readFileSync(templatePath, 'utf-8');
 
@@ -60,6 +62,15 @@ export function renderHTML(
     /<!-- DATA_START -->[\s\S]*?<!-- DATA_END -->/,
     `<!-- DATA_START -->\n${dataBlock}\n      <!-- DATA_END -->`
   );
+
+  // Replace the epics block
+  if (epicBreakdown.length > 0) {
+    const epicsBlock = buildEpicsHTML(epicBreakdown);
+    html = html.replace(
+      /<!-- EPICS_START -->[\s\S]*?<!-- EPICS_END -->/,
+      `<!-- EPICS_START -->\n${epicsBlock}\n        <!-- EPICS_END -->`
+    );
+  }
 
   return html;
 }
@@ -224,6 +235,72 @@ interface SpeedEntry {
   data: [number, number][];
   total: number;
   trend: string;
+}
+
+// ---------------------------------------------------------------------------
+// Epics table builder (HTML injection)
+// ---------------------------------------------------------------------------
+
+function buildEpicsHTML(rows: EpicAgenticRow[]): string {
+  const teamOrder = ['Design System', 'Build Loop', 'Delivery Loop', 'Shared Services'];
+  const teamGroups = new Map<string, EpicAgenticRow[]>();
+
+  for (const row of rows) {
+    // Normalize DX team name to pillar name
+    const team = row.team === 'Spring Design System' ? 'Design System' : row.team;
+    if (!teamGroups.has(team)) teamGroups.set(team, []);
+    teamGroups.get(team)!.push(row);
+  }
+
+  const sections: string[] = [];
+
+  for (const teamName of teamOrder) {
+    const epics = teamGroups.get(teamName);
+    if (!epics || epics.length === 0) continue;
+
+    const teamRows = epics
+      .sort((a, b) => b.totalPRs - a.totalPRs)
+      .map((e) => {
+        const pct = e.agenticPct;
+        const pctClass = pct >= 70 ? 'badge-green' : pct >= 40 ? 'badge-yellow' : 'badge-red';
+        const pctIcon = pct >= 70 ? '🟢' : pct >= 40 ? '🟡' : '🔴';
+
+        // Strip emoji prefix from summary for cleaner rendering
+        const summary = e.epicSummary.replace(/^[\p{Emoji}\s]+/u, '').trim();
+        const jiraUrl = `https://webflow.atlassian.net/browse/${e.epicKey}`;
+
+        return [
+          `          <tr>`,
+          `            <td><a href="${jiraUrl}" target="_blank" style="color:var(--accent);text-decoration:none">${e.epicKey}</a></td>`,
+          `            <td>${summary}</td>`,
+          `            <td class="num">${e.totalPRs}</td>`,
+          `            <td class="num">${e.agenticPRs}</td>`,
+          `            <td><span class="badge ${pctClass}">${pctIcon} ${pct}%</span></td>`,
+          `          </tr>`,
+        ].join('\n');
+      })
+      .join('\n');
+
+    sections.push([
+      `        <h3 style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px">${teamName}</h3>`,
+      `        <div class="table-wrap" style="margin-bottom:0">`,
+      `          <table>`,
+      `            <thead><tr>`,
+      `              <th>Epic</th>`,
+      `              <th>Summary</th>`,
+      `              <th style="text-align:center">Total PRs</th>`,
+      `              <th style="text-align:center">Agentic PRs</th>`,
+      `              <th>Agentic %</th>`,
+      `            </tr></thead>`,
+      `            <tbody>`,
+      teamRows,
+      `            </tbody>`,
+      `          </table>`,
+      `        </div>`,
+    ].join('\n'));
+  }
+
+  return sections.join('\n');
 }
 
 // ---------------------------------------------------------------------------
