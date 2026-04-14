@@ -167,6 +167,9 @@
         vertical-align: middle;
         border-right: 1px solid #252e3d;
       }
+      tfoot tr td {
+        background: rgba(255,255,255,0.03);
+      }
       .badge-blue {
         background: rgba(79, 142, 247, 0.15);
         color: var(--accent);
@@ -564,6 +567,7 @@
               </tr>
             </thead>
             <tbody id="adoptionTable"></tbody>
+            <tfoot id="adoptionTotals"></tfoot>
           </table>
         </div>
       </section>
@@ -1133,6 +1137,38 @@
       <td><span class="badge ${tierBadgeClass[tier]}" style="white-space:nowrap">${d.status}</span></td>
     </tr>`;
       });
+
+      // ── Pillar total row ────────────────────────────────────────────────────────
+      const tfoot = document.getElementById('adoptionTotals');
+      const pillarSize         = adoptionData.reduce((s, d) => s + d.size, 0);
+      const pillarCursorUsers  = adoptionData.reduce((s, d) => s + d.users, 0);
+      const pillarPct          = Math.round(pillarCursorUsers / pillarSize * 100);
+      const pillarTotal        = adoptionData.reduce((s, d) => s + d.total, 0);
+      const pillarClaudeUsers  = adoptionData.reduce((s, d) => s + (d.claudeUsers ?? 0), 0);
+      const pillarClaudeSess   = adoptionData.reduce((s, d) => s + (d.claudeSessions ?? 0), 0);
+      const pillarClaudePRs    = adoptionData.reduce((s, d) => s + (d.claudePRs ?? 0), 0);
+      const pillarWTotals      = WEEKS.map((_, i) => adoptionData.reduce((s, d) => s + (d.w[i] ?? 0), 0));
+      const pillarTier         = tierFromPct(pillarPct);
+      const pillarCls          = tierBarClass[pillarTier];
+      const pillarClr          = tierTextClass[pillarTier];
+      tfoot.innerHTML = `
+    <tr style="border-top:2px solid #3a4a5c;font-weight:600">
+      <td class="team-name" style="color:var(--text)">Pillar Total</td>
+      <td class="num">${pillarSize}</td>
+      <td class="num up">${pillarClaudeSess.toLocaleString()}</td>
+      <td class="num up">${pillarClaudePRs}</td>
+      <td class="num up">${pillarClaudeUsers}</td>
+      <td class="num">${pillarCursorUsers} / ${pillarSize}</td>
+      <td>
+        <div class="adopt-bar">
+          <div class="bar-track"><div class="bar-fill ${pillarCls}" style="width:${pillarPct}%"></div></div>
+          <span class="num ${pillarClr}" style="font-size:12px;min-width:32px">${pillarPct}%</span>
+        </div>
+      </td>
+      <td class="num up">${pillarTotal.toLocaleString()}</td>
+      ${pillarWTotals.map((v) => `<td class="num">${v}</td>`).join('')}
+      <td>—</td>
+    </tr>`;
 
       // ── Speed table ────────────────────────────────────────────────────────────
 
