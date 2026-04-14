@@ -52,6 +52,8 @@ interface TeamRow {
   cursorActive: number;
   claudeActive: number;
   combinedActive: number;
+  totalPRs: number;
+  agenticPRs: number;
 }
 
 type AgenticTier = 'full_agentic' | 'adopting' | 'exploring' | 'insufficient_data';
@@ -80,71 +82,80 @@ function tierBadge(tier: AgenticTier): string {
 }
 
 // ── Live data (from DX MCP query, 13 Apr 2026, window: Mar 14 – Apr 13) ──────
+// PR signal: a PR is "agentic" if the author had Cursor or Claude activity
+// on the same day the PR was merged (DX warehouse signal).
 
 const REPORT_DATE = '13 Apr 2026';
 const WINDOW = 'Mar 14 – Apr 13 2026';
 
 const TEAM_DATA: TeamRow[] = [
   // Analytics Engineering
-  { pillar: 'Analytics Engineering', team: 'EPD Analytics Engineering',       size: 4,  cursorActive: 2, claudeActive: 4,  combinedActive: 4  },
-  { pillar: 'Analytics Engineering', team: 'GTM / G&A Analytics Engineering', size: 3,  cursorActive: 2, claudeActive: 3,  combinedActive: 3  },
+  { pillar: 'Analytics Engineering', team: 'EPD Analytics Engineering',       size: 4,  cursorActive: 2, claudeActive: 4,  combinedActive: 4,  totalPRs: 66,  agenticPRs: 64  },
+  { pillar: 'Analytics Engineering', team: 'GTM / G&A Analytics Engineering', size: 3,  cursorActive: 2, claudeActive: 3,  combinedActive: 3,  totalPRs: 35,  agenticPRs: 34  },
   // Collaborate Pillar
-  { pillar: 'Collaborate Pillar',    team: 'Assets',                           size: 6,  cursorActive: 3, claudeActive: 6,  combinedActive: 6  },
-  { pillar: 'Collaborate Pillar',    team: 'Collaboration',                    size: 9,  cursorActive: 8, claudeActive: 8,  combinedActive: 9  },
-  { pillar: 'Collaborate Pillar',    team: 'IdSC',                             size: 7,  cursorActive: 4, claudeActive: 6,  combinedActive: 7  },
-  { pillar: 'Collaborate Pillar',    team: 'User Expansion',                   size: 3,  cursorActive: 1, claudeActive: 2,  combinedActive: 2  },
-  { pillar: 'Collaborate Pillar',    team: 'Workflows',                        size: 7,  cursorActive: 6, claudeActive: 4,  combinedActive: 6  },
+  { pillar: 'Collaborate Pillar',    team: 'Assets',                           size: 6,  cursorActive: 3, claudeActive: 6,  combinedActive: 6,  totalPRs: 19,  agenticPRs: 17  },
+  { pillar: 'Collaborate Pillar',    team: 'Collaboration',                    size: 9,  cursorActive: 8, claudeActive: 8,  combinedActive: 9,  totalPRs: 48,  agenticPRs: 47  },
+  { pillar: 'Collaborate Pillar',    team: 'IdSC',                             size: 7,  cursorActive: 4, claudeActive: 6,  combinedActive: 7,  totalPRs: 81,  agenticPRs: 79  },
+  { pillar: 'Collaborate Pillar',    team: 'User Expansion',                   size: 3,  cursorActive: 1, claudeActive: 2,  combinedActive: 2,  totalPRs: 12,  agenticPRs: 12  },
+  { pillar: 'Collaborate Pillar',    team: 'Workflows',                        size: 7,  cursorActive: 6, claudeActive: 4,  combinedActive: 6,  totalPRs: 52,  agenticPRs: 50  },
   // Compose Pillar
-  { pillar: 'Compose Pillar',        team: 'CMS Authoring',                    size: 6,  cursorActive: 6, claudeActive: 6,  combinedActive: 6  },
-  { pillar: 'Compose Pillar',        team: 'CMS Extensibility',                size: 8,  cursorActive: 2, claudeActive: 8,  combinedActive: 8  },
-  { pillar: 'Compose Pillar',        team: 'Localization',                     size: 5,  cursorActive: 1, claudeActive: 4,  combinedActive: 4  },
-  { pillar: 'Compose Pillar',        team: 'Site Discovery',                   size: 3,  cursorActive: 3, claudeActive: 3,  combinedActive: 3  },
+  { pillar: 'Compose Pillar',        team: 'CMS Authoring',                    size: 6,  cursorActive: 6, claudeActive: 6,  combinedActive: 6,  totalPRs: 88,  agenticPRs: 84  },
+  { pillar: 'Compose Pillar',        team: 'CMS Extensibility',                size: 8,  cursorActive: 2, claudeActive: 8,  combinedActive: 8,  totalPRs: 49,  agenticPRs: 28  },
+  { pillar: 'Compose Pillar',        team: 'Localization',                     size: 5,  cursorActive: 1, claudeActive: 4,  combinedActive: 4,  totalPRs: 30,  agenticPRs: 13  },
+  { pillar: 'Compose Pillar',        team: 'Site Discovery',                   size: 3,  cursorActive: 3, claudeActive: 3,  combinedActive: 3,  totalPRs: 21,  agenticPRs: 19  },
   // Convert Pillar
-  { pillar: 'Convert Pillar',        team: 'Analyze',                          size: 7,  cursorActive: 6, claudeActive: 5,  combinedActive: 7  },
-  { pillar: 'Convert Pillar',        team: 'Convert Infra',                    size: 5,  cursorActive: 4, claudeActive: 4,  combinedActive: 5  },
-  { pillar: 'Convert Pillar',        team: 'Optimize',                         size: 9,  cursorActive: 7, claudeActive: 8,  combinedActive: 9  },
+  { pillar: 'Convert Pillar',        team: 'Analyze',                          size: 7,  cursorActive: 6, claudeActive: 5,  combinedActive: 7,  totalPRs: 46,  agenticPRs: 43  },
+  { pillar: 'Convert Pillar',        team: 'Convert Infra',                    size: 5,  cursorActive: 4, claudeActive: 4,  combinedActive: 5,  totalPRs: 29,  agenticPRs: 29  },
+  { pillar: 'Convert Pillar',        team: 'Optimize',                         size: 9,  cursorActive: 7, claudeActive: 8,  combinedActive: 9,  totalPRs: 80,  agenticPRs: 61  },
   // Data Engineering
-  { pillar: 'Data Engineering',      team: 'Data Science',                     size: 4,  cursorActive: 4, claudeActive: 4,  combinedActive: 4  },
-  { pillar: 'Data Engineering',      team: 'Ecosystem Data Science',           size: 5,  cursorActive: 4, claudeActive: 4,  combinedActive: 4  },
+  { pillar: 'Data Engineering',      team: 'Data Science',                     size: 4,  cursorActive: 4, claudeActive: 4,  combinedActive: 4,  totalPRs: 13,  agenticPRs: 12  },
+  { pillar: 'Data Engineering',      team: 'Ecosystem Data Science',           size: 5,  cursorActive: 4, claudeActive: 4,  combinedActive: 4,  totalPRs: 1,   agenticPRs: 1   },
   // Design Pillar
-  { pillar: 'Design Pillar',         team: 'Design Experience',                size: 10, cursorActive: 5, claudeActive: 5,  combinedActive: 7  },
-  { pillar: 'Design Pillar',         team: 'Design Infra',                     size: 5,  cursorActive: 4, claudeActive: 3,  combinedActive: 4  },
-  { pillar: 'Design Pillar',         team: 'Structure',                        size: 14, cursorActive: 12,claudeActive: 12, combinedActive: 13 },
-  { pillar: 'Design Pillar',         team: 'Styles',                           size: 8,  cursorActive: 6, claudeActive: 7,  combinedActive: 8  },
+  { pillar: 'Design Pillar',         team: 'Design Experience',                size: 10, cursorActive: 5, claudeActive: 5,  combinedActive: 7,  totalPRs: 73,  agenticPRs: 58  },
+  { pillar: 'Design Pillar',         team: 'Design Infra',                     size: 5,  cursorActive: 4, claudeActive: 3,  combinedActive: 4,  totalPRs: 28,  agenticPRs: 21  },
+  { pillar: 'Design Pillar',         team: 'Structure',                        size: 14, cursorActive: 12,claudeActive: 12, combinedActive: 13, totalPRs: 110, agenticPRs: 107 },
+  { pillar: 'Design Pillar',         team: 'Styles',                           size: 8,  cursorActive: 6, claudeActive: 7,  combinedActive: 8,  totalPRs: 61,  agenticPRs: 60  },
   // Develop Pillar
-  { pillar: 'Develop Pillar',        team: 'Code Gen',                         size: 9,  cursorActive: 6, claudeActive: 6,  combinedActive: 8  },
-  { pillar: 'Develop Pillar',        team: 'Code Sync',                        size: 4,  cursorActive: 1, claudeActive: 3,  combinedActive: 4  },
-  { pillar: 'Develop Pillar',        team: 'Webflow Cloud',                    size: 8,  cursorActive: 5, claudeActive: 7,  combinedActive: 8  },
+  { pillar: 'Develop Pillar',        team: 'Code Gen',                         size: 9,  cursorActive: 6, claudeActive: 6,  combinedActive: 8,  totalPRs: 45,  agenticPRs: 36  },
+  { pillar: 'Develop Pillar',        team: 'Code Sync',                        size: 4,  cursorActive: 1, claudeActive: 3,  combinedActive: 4,  totalPRs: 26,  agenticPRs: 25  },
+  { pillar: 'Develop Pillar',        team: 'Webflow Cloud',                    size: 8,  cursorActive: 5, claudeActive: 7,  combinedActive: 8,  totalPRs: 84,  agenticPRs: 67  },
   // Growth Pillar
-  { pillar: 'Growth Pillar',         team: 'AI Design & Assist',               size: 12, cursorActive: 7, claudeActive: 7,  combinedActive: 11 },
-  { pillar: 'Growth Pillar',         team: 'Developer Platform',               size: 14, cursorActive: 9, claudeActive: 12, combinedActive: 12 },
-  { pillar: 'Growth Pillar',         team: 'Lifecycle',                        size: 3,  cursorActive: 2, claudeActive: 3,  combinedActive: 3  },
-  { pillar: 'Growth Pillar',         team: 'SP Success',                       size: 7,  cursorActive: 3, claudeActive: 7,  combinedActive: 7  },
-  { pillar: 'Growth Pillar',         team: 'Subscription & Payments',          size: 12, cursorActive: 8, claudeActive: 12, combinedActive: 12 },
+  { pillar: 'Growth Pillar',         team: 'AI Design & Assist',               size: 12, cursorActive: 7, claudeActive: 7,  combinedActive: 11, totalPRs: 49,  agenticPRs: 39  },
+  { pillar: 'Growth Pillar',         team: 'Developer Platform',               size: 14, cursorActive: 9, claudeActive: 12, combinedActive: 12, totalPRs: 161, agenticPRs: 146 },
+  { pillar: 'Growth Pillar',         team: 'Lifecycle',                        size: 3,  cursorActive: 2, claudeActive: 3,  combinedActive: 3,  totalPRs: 40,  agenticPRs: 36  },
+  { pillar: 'Growth Pillar',         team: 'SP Success',                       size: 7,  cursorActive: 3, claudeActive: 7,  combinedActive: 7,  totalPRs: 60,  agenticPRs: 29  },
+  { pillar: 'Growth Pillar',         team: 'Subscription & Payments',          size: 12, cursorActive: 8, claudeActive: 12, combinedActive: 12, totalPRs: 83,  agenticPRs: 64  },
   // Infrastructure
-  { pillar: 'Infrastructure',        team: 'Data Platform',                    size: 12, cursorActive: 9, claudeActive: 12, combinedActive: 12 },
-  { pillar: 'Infrastructure',        team: 'Hosting Infrastructure',           size: 6,  cursorActive: 3, claudeActive: 6,  combinedActive: 6  },
-  { pillar: 'Infrastructure',        team: 'Site Reliability',                 size: 5,  cursorActive: 2, claudeActive: 4,  combinedActive: 4  },
+  { pillar: 'Infrastructure',        team: 'Data Platform',                    size: 12, cursorActive: 9, claudeActive: 12, combinedActive: 12, totalPRs: 184, agenticPRs: 172 },
+  { pillar: 'Infrastructure',        team: 'Hosting Infrastructure',           size: 6,  cursorActive: 3, claudeActive: 6,  combinedActive: 6,  totalPRs: 148, agenticPRs: 138 },
+  { pillar: 'Infrastructure',        team: 'Site Reliability',                 size: 5,  cursorActive: 2, claudeActive: 4,  combinedActive: 4,  totalPRs: 40,  agenticPRs: 34  },
   // Productivity Pillar
-  { pillar: 'Productivity Pillar',   team: 'Build Loop',                       size: 8,  cursorActive: 2, claudeActive: 8,  combinedActive: 8  },
-  { pillar: 'Productivity Pillar',   team: 'Delivery Loop',                    size: 8,  cursorActive: 4, claudeActive: 8,  combinedActive: 8  },
-  { pillar: 'Productivity Pillar',   team: 'Shared Services',                  size: 5,  cursorActive: 4, claudeActive: 5,  combinedActive: 5  },
-  { pillar: 'Productivity Pillar',   team: 'Spring Design System',             size: 4,  cursorActive: 4, claudeActive: 4,  combinedActive: 4  },
+  { pillar: 'Productivity Pillar',   team: 'Build Loop',                       size: 8,  cursorActive: 2, claudeActive: 8,  combinedActive: 8,  totalPRs: 79,  agenticPRs: 76  },
+  { pillar: 'Productivity Pillar',   team: 'Delivery Loop',                    size: 8,  cursorActive: 4, claudeActive: 8,  combinedActive: 8,  totalPRs: 179, agenticPRs: 162 },
+  { pillar: 'Productivity Pillar',   team: 'Shared Services',                  size: 5,  cursorActive: 4, claudeActive: 5,  combinedActive: 5,  totalPRs: 18,  agenticPRs: 10  },
+  { pillar: 'Productivity Pillar',   team: 'Spring Design System',             size: 4,  cursorActive: 4, claudeActive: 4,  combinedActive: 4,  totalPRs: 85,  agenticPRs: 65  },
   // Security
-  { pillar: 'Security',              team: 'Application Security',             size: 6,  cursorActive: 2, claudeActive: 6,  combinedActive: 6  },
-  { pillar: 'Security',              team: 'Information Security',             size: 3,  cursorActive: 3, claudeActive: 3,  combinedActive: 3  },
-  { pillar: 'Security',              team: 'Risk & Compliance',                size: 3,  cursorActive: 0, claudeActive: 3,  combinedActive: 3  },
-  { pillar: 'Security',              team: 'Security Engineering',             size: 3,  cursorActive: 3, claudeActive: 3,  combinedActive: 3  },
-  { pillar: 'Security',              team: 'Trust & Safety',                   size: 4,  cursorActive: 1, claudeActive: 4,  combinedActive: 4  },
+  { pillar: 'Security',              team: 'Application Security',             size: 6,  cursorActive: 2, claudeActive: 6,  combinedActive: 6,  totalPRs: 38,  agenticPRs: 26  },
+  { pillar: 'Security',              team: 'Information Security',             size: 3,  cursorActive: 3, claudeActive: 3,  combinedActive: 3,  totalPRs: 3,   agenticPRs: 3   },
+  { pillar: 'Security',              team: 'Risk & Compliance',                size: 3,  cursorActive: 0, claudeActive: 3,  combinedActive: 3,  totalPRs: 0,   agenticPRs: 0   },
+  { pillar: 'Security',              team: 'Security Engineering',             size: 3,  cursorActive: 3, claudeActive: 3,  combinedActive: 3,  totalPRs: 6,   agenticPRs: 5   },
+  { pillar: 'Security',              team: 'Trust & Safety',                   size: 4,  cursorActive: 1, claudeActive: 4,  combinedActive: 4,  totalPRs: 0,   agenticPRs: 0   },
   // Ungrouped
-  { pillar: '(Ungrouped)',           team: 'AI Foundations',                   size: 2,  cursorActive: 2, claudeActive: 2,  combinedActive: 2  },
-  { pillar: '(Ungrouped)',           team: 'Leadership',                       size: 15, cursorActive: 8, claudeActive: 15, combinedActive: 15 },
+  { pillar: '(Ungrouped)',           team: 'AI Foundations',                   size: 2,  cursorActive: 2, claudeActive: 2,  combinedActive: 2,  totalPRs: 28,  agenticPRs: 24  },
+  { pillar: '(Ungrouped)',           team: 'Leadership',                       size: 15, cursorActive: 8, claudeActive: 15, combinedActive: 15, totalPRs: 112, agenticPRs: 111 },
 ];
 
 // ── Build HTML ───────────────────────────────────────────────────────────────
 
 function pct(active: number, size: number): number {
   return size === 0 ? 0 : Math.round((active / size) * 100);
+}
+
+function prAgenticBadge(agenticPRs: number, totalPRs: number): string {
+  if (totalPRs === 0) return '<span style="color:var(--muted);font-size:11px">—</span>';
+  const p = pct(agenticPRs, totalPRs);
+  const cls = p >= 60 ? 'badge-green' : p >= 30 ? 'badge-yellow' : 'badge-blue';
+  return `<span class="badge ${cls}">${p}%</span>`;
 }
 
 function buildPillarRows(rows: TeamRow[]): string {
@@ -169,6 +180,8 @@ function buildPillarRows(rows: TeamRow[]): string {
       const totalCombined = teams.reduce((s, t) => s + t.combinedActive, 0);
       const totalCursor = teams.reduce((s, t) => s + t.cursorActive, 0);
       const totalClaude = teams.reduce((s, t) => s + t.claudeActive, 0);
+      const totalPRs = teams.reduce((s, t) => s + t.totalPRs, 0);
+      const totalAgenticPRs = teams.reduce((s, t) => s + t.agenticPRs, 0);
       const pillarPct = pct(totalCombined, totalSize);
 
       const pillarRow = `
@@ -185,6 +198,9 @@ function buildPillarRows(rows: TeamRow[]): string {
           </div>
         </td>
         <td>${tierBadge(computeTier(totalCombined, totalSize))}</td>
+        <td class="num">${totalPRs}</td>
+        <td class="num muted">${totalAgenticPRs}</td>
+        <td>${prAgenticBadge(totalAgenticPRs, totalPRs)}</td>
       </tr>`;
 
       const teamRows = teams
@@ -213,6 +229,9 @@ function buildPillarRows(rows: TeamRow[]): string {
           </div>
         </td>
         <td>${tierBadge(tier)}</td>
+        <td class="num">${t.totalPRs > 0 ? t.totalPRs : '<span style="color:var(--muted)">—</span>'}</td>
+        <td class="num">${t.agenticPRs > 0 ? t.agenticPRs : '<span style="color:var(--muted)">—</span>'}</td>
+        <td>${prAgenticBadge(t.agenticPRs, t.totalPRs)}</td>
       </tr>`;
         })
         .join('');
@@ -231,6 +250,9 @@ function buildSummaryCards(rows: TeamRow[]): string {
   const totalCombined = rows.reduce((s, r) => s + r.combinedActive, 0);
   const overallPct = pct(totalCombined, totalSize);
   const claudeDominant = rows.filter((r) => r.claudeActive > r.cursorActive).length;
+  const totalPRs = rows.reduce((s, r) => s + r.totalPRs, 0);
+  const totalAgenticPRs = rows.reduce((s, r) => s + r.agenticPRs, 0);
+  const prAgenticPct = pct(totalAgenticPRs, totalPRs);
 
   return `
     <div class="stat-grid">
@@ -246,19 +268,20 @@ function buildSummaryCards(rows: TeamRow[]): string {
         <span class="badge badge-green">🟢 ${Math.round((fullAgentic / totalTeams) * 100)}% of teams</span>
       </div>
       <div class="stat-card">
-        <div class="label">Adopting</div>
-        <div class="value" style="color:var(--yellow)">${adopting}</div>
-        <div class="sub">30–59% adoption</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Exploring</div>
-        <div class="value" style="color:var(--accent)">${exploring}</div>
-        <div class="sub">&lt; 30% adoption</div>
-      </div>
-      <div class="stat-card">
         <div class="label">Overall Adoption</div>
         <div class="value">${overallPct}%</div>
         <div class="sub">${totalCombined} of ${totalSize} engineers on AI tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Total PRs Merged (30d)</div>
+        <div class="value">${totalPRs.toLocaleString()}</div>
+        <div class="sub">across all tracked teams</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Agentic PRs (30d)</div>
+        <div class="value" style="color:var(--green)">${totalAgenticPRs.toLocaleString()}</div>
+        <div class="sub">${prAgenticPct}% of all PRs merged while author was on AI tools</div>
+        <span class="badge badge-green">🟢 ${prAgenticPct}% agentic</span>
       </div>
       <div class="stat-card">
         <div class="label">Claude-Dominant Teams</div>
@@ -542,6 +565,9 @@ function generateHTML(): string {
                 <th class="num">Combined</th>
                 <th style="min-width:160px">Adoption</th>
                 <th>Tier</th>
+                <th class="num">Total PRs</th>
+                <th class="num">Agentic PRs</th>
+                <th>Agentic PR %</th>
               </tr>
             </thead>
             <tbody>
@@ -554,15 +580,16 @@ function generateHTML(): string {
       <section>
         <div class="methodology">
           <strong>Methodology</strong><br />
-          Adoption % = engineers active on <code>Cursor</code> <em>or</em> <code>Claude Code</code> in the 30-day window ÷ total DX-tracked team size.
-          "Active" means <code>is_active = true</code> on at least one day in the window per the DX warehouse
-          (<code>cursor_daily_user_metrics</code> and <code>claude_code_daily_user_metrics</code>).<br /><br />
-          Tier thresholds mirror the Productivity Pillar report: &lt;30% = Exploring,
-          30–59% = Adopting, ≥60% = Full-Agentic. "Primary Tool" shows which tool had
-          more unique active users on that team (Claude / Cursor / Both if equal).<br /><br />
-          <strong>Note on Leadership &amp; AI Foundations</strong>: shown for completeness — these are non-pillar
-          groupings in DX with mixed engineering/non-engineering membership. The high adoption
-          rates reflect Claude licensing rather than day-to-day coding tool usage.
+          <strong>Adoption %</strong> = engineers active on <code>Cursor</code> <em>or</em> <code>Claude Code</code> in the 30-day window ÷ DX-tracked team size.
+          "Active" = <code>is_active = true</code> on at least one day in the window
+          (<code>cursor_daily_user_metrics</code> / <code>claude_code_daily_user_metrics</code>).<br /><br />
+          <strong>Agentic PR %</strong> = PRs where the author had an active Cursor or Claude session
+          on the same calendar day the PR was merged. This is a conservative proxy —
+          it undercounts PRs where AI was used earlier in the branch lifetime but not on merge day.<br /><br />
+          Tier thresholds: &lt;30% = Exploring, 30–59% = Adopting, ≥60% = Full-Agentic.
+          "Primary Tool" shows which tool had more unique active users (Claude / Cursor / Both if equal).<br /><br />
+          <strong>Note on Leadership &amp; AI Foundations</strong>: shown for completeness — non-pillar
+          groupings with mixed membership. High adoption reflects Claude licensing breadth.
         </div>
       </section>
     </main>
