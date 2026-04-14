@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agentic Adoption — All Teams · Webflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --surface: #141920;
+        --surface2: #1c2430;
+        --border: #252e3d;
+        --text: #e2e8f0;
+        --muted: #7a8ba3;
+        --accent: #4f8ef7;
+        --green: #34d399;
+        --yellow: #fbbf24;
+        --red: #f87171;
+        --purple: #a78bfa;
+        --cyan: #22d3ee;
+        --mono: 'IBM Plex Mono', monospace;
+        --sans: 'IBM Plex Sans', sans-serif;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        padding: 28px 40px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      header h1 {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        color: #fff;
+      }
+      header .meta {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      header .meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display:inline-block; }
+      header .nav-back {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--accent);
+        text-decoration: none;
+      }
+      header .nav-back:hover { text-decoration: underline; }
+      main {
+        padding: 32px 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      section { margin-bottom: 40px; }
+      h2 {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .stat-card .label {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.1;
+      }
+      .stat-card .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+      .stat-card .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-family: var(--mono);
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+      .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
+      .badge-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); }
+      .badge-blue { background: rgba(79,142,247,0.15); color: var(--accent); }
+      .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+      .table-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: auto;
+      }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      th {
+        background: var(--surface2);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 10px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      th.num, td.num { text-align: right; }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+      td.muted { color: var(--muted); }
+      tr:last-child td { border-bottom: none; }
+      /* Pillar header row */
+      tr.pillar-row td {
+        background: rgba(255,255,255,0.035);
+        border-top: 2px solid var(--border);
+        font-weight: 600;
+        color: #fff;
+      }
+      tr.pillar-row:first-child td { border-top: none; }
+      .pillar-name {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted) !important;
+        font-weight: 600 !important;
+      }
+      /* Team rows */
+      tr.team-row:hover td { background: rgba(255,255,255,0.02); }
+      .team-indent { padding-left: 28px !important; }
+      /* Tool preference pills */
+      .tool-pill {
+        font-size: 10px;
+        font-family: var(--mono);
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .tool-pill.claude { background: rgba(167,139,250,0.18); color: var(--purple); }
+      .tool-pill.cursor { background: rgba(79,142,247,0.18); color: var(--accent); }
+      .tool-pill.both { background: rgba(52,211,153,0.15); color: var(--green); }
+      /* Adoption bar */
+      .bar-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 120px;
+      }
+      .bar-fill {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--green);
+        flex-shrink: 0;
+        min-width: 2px;
+        max-width: 80px;
+      }
+      .bar-fill.yellow { background: var(--yellow); }
+      .bar-fill.blue { background: var(--accent); }
+      .bar-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      /* Inline badge in table */
+      td .badge {
+        font-size: 10px;
+        font-family: var(--mono);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .methodology {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px 24px;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+      .methodology strong { color: var(--text); }
+      .methodology code {
+        font-family: var(--mono);
+        font-size: 11px;
+        background: rgba(255,255,255,0.06);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <h1>Agentic Adoption &mdash; All Engineering Teams</h1>
+        <a class="nav-back" href="index.html">← Back to Productivity Pillar Report</a>
+      </div>
+      <div class="meta">
+        <span><span class="dot"></span>&nbsp;Generated 13 Apr 2026</span>
+        <span>Window: Mar 14 – Apr 13 2026 (30 days)</span>
+        <span>Signal: Cursor + Claude Code active users (DX warehouse)</span>
+        <span>43 teams &middot; 12 pillars</span>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>Summary</h2>
+        
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">Total Teams</div>
+        <div class="value">42</div>
+        <div class="sub">281 engineers tracked</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Full-Agentic</div>
+        <div class="value" style="color:var(--green)">42</div>
+        <div class="sub">of 42 teams ≥ 60% adoption</div>
+        <span class="badge badge-green">🟢 100% of teams</span>
+      </div>
+      <div class="stat-card">
+        <div class="label">Adopting</div>
+        <div class="value" style="color:var(--yellow)">0</div>
+        <div class="sub">30–59% adoption</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Exploring</div>
+        <div class="value" style="color:var(--accent)">0</div>
+        <div class="sub">&lt; 30% adoption</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Overall Adoption</div>
+        <div class="value">95%</div>
+        <div class="sub">267 of 281 engineers on AI tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Claude-Dominant Teams</div>
+        <div class="value">25</div>
+        <div class="sub">Claude active &gt; Cursor active</div>
+        <span class="badge badge-blue">of 42 teams</span>
+      </div>
+    </div>
+      </section>
+
+      <section>
+        <h2>Team Breakdown by Pillar</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:220px">Team</th>
+                <th>Primary Tool</th>
+                <th class="num">Size</th>
+                <th class="num">Cursor Active</th>
+                <th class="num">Claude Active</th>
+                <th class="num">Combined</th>
+                <th style="min-width:160px">Adoption</th>
+                <th>Tier</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Analytics Engineering</td>
+        <td class="num">7</td>
+        <td class="num muted">4</td>
+        <td class="num muted">7</td>
+        <td class="num">7</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">EPD Analytics Engineering</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">4</td>
+        <td class="num">2</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">GTM / G&A Analytics Engineering</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">3</td>
+        <td class="num">2</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Collaborate Pillar</td>
+        <td class="num">32</td>
+        <td class="num muted">22</td>
+        <td class="num muted">26</td>
+        <td class="num">30</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:94%"></div>
+            <span class="bar-label">94%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Assets</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">6</td>
+        <td class="num">3</td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Collaboration</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">9</td>
+        <td class="num">8</td>
+        <td class="num">8</td>
+        <td class="num">9</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">IdSC</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">7</td>
+        <td class="num">4</td>
+        <td class="num">6</td>
+        <td class="num">7</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">User Expansion</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">3</td>
+        <td class="num">1</td>
+        <td class="num">2</td>
+        <td class="num">2</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:67%"></div>
+            <span class="bar-label">67%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Workflows</td>
+        <td><span class="tool-pill cursor">Cursor</span></td>
+        <td class="num">7</td>
+        <td class="num">6</td>
+        <td class="num">4</td>
+        <td class="num">6</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:86%"></div>
+            <span class="bar-label">86%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Compose Pillar</td>
+        <td class="num">22</td>
+        <td class="num muted">12</td>
+        <td class="num muted">21</td>
+        <td class="num">21</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:95%"></div>
+            <span class="bar-label">95%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">CMS Authoring</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">CMS Extensibility</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">8</td>
+        <td class="num">2</td>
+        <td class="num">8</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Localization</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">5</td>
+        <td class="num">1</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:80%"></div>
+            <span class="bar-label">80%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Site Discovery</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Convert Pillar</td>
+        <td class="num">21</td>
+        <td class="num muted">17</td>
+        <td class="num muted">17</td>
+        <td class="num">21</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Analyze</td>
+        <td><span class="tool-pill cursor">Cursor</span></td>
+        <td class="num">7</td>
+        <td class="num">6</td>
+        <td class="num">5</td>
+        <td class="num">7</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Convert Infra</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td class="num">5</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Optimize</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">9</td>
+        <td class="num">7</td>
+        <td class="num">8</td>
+        <td class="num">9</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Data Engineering</td>
+        <td class="num">9</td>
+        <td class="num muted">8</td>
+        <td class="num muted">8</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:89%"></div>
+            <span class="bar-label">89%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Data Science</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Ecosystem Data Science</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:80%"></div>
+            <span class="bar-label">80%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Design Pillar</td>
+        <td class="num">37</td>
+        <td class="num muted">27</td>
+        <td class="num muted">27</td>
+        <td class="num">32</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:86%"></div>
+            <span class="bar-label">86%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Design Experience</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">10</td>
+        <td class="num">5</td>
+        <td class="num">5</td>
+        <td class="num">7</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:70%"></div>
+            <span class="bar-label">70%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Design Infra</td>
+        <td><span class="tool-pill cursor">Cursor</span></td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">3</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:80%"></div>
+            <span class="bar-label">80%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Structure</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">14</td>
+        <td class="num">12</td>
+        <td class="num">12</td>
+        <td class="num">13</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:93%"></div>
+            <span class="bar-label">93%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Styles</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">8</td>
+        <td class="num">6</td>
+        <td class="num">7</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Develop Pillar</td>
+        <td class="num">21</td>
+        <td class="num muted">12</td>
+        <td class="num muted">16</td>
+        <td class="num">20</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:95%"></div>
+            <span class="bar-label">95%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Code Gen</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">9</td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:89%"></div>
+            <span class="bar-label">89%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Code Sync</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">4</td>
+        <td class="num">1</td>
+        <td class="num">3</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Webflow Cloud</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">8</td>
+        <td class="num">5</td>
+        <td class="num">7</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Growth Pillar</td>
+        <td class="num">48</td>
+        <td class="num muted">29</td>
+        <td class="num muted">41</td>
+        <td class="num">45</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:94%"></div>
+            <span class="bar-label">94%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">AI Design & Assist</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">12</td>
+        <td class="num">7</td>
+        <td class="num">7</td>
+        <td class="num">11</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:92%"></div>
+            <span class="bar-label">92%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Developer Platform</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">14</td>
+        <td class="num">9</td>
+        <td class="num">12</td>
+        <td class="num">12</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:86%"></div>
+            <span class="bar-label">86%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Lifecycle</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">3</td>
+        <td class="num">2</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">SP Success</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">7</td>
+        <td class="num">3</td>
+        <td class="num">7</td>
+        <td class="num">7</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Subscription & Payments</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">12</td>
+        <td class="num">8</td>
+        <td class="num">12</td>
+        <td class="num">12</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Infrastructure</td>
+        <td class="num">23</td>
+        <td class="num muted">14</td>
+        <td class="num muted">22</td>
+        <td class="num">22</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:96%"></div>
+            <span class="bar-label">96%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Data Platform</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">12</td>
+        <td class="num">9</td>
+        <td class="num">12</td>
+        <td class="num">12</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Hosting Infrastructure</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">6</td>
+        <td class="num">3</td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Site Reliability</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">5</td>
+        <td class="num">2</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:80%"></div>
+            <span class="bar-label">80%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Productivity Pillar</td>
+        <td class="num">25</td>
+        <td class="num muted">14</td>
+        <td class="num muted">25</td>
+        <td class="num">25</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Build Loop</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">8</td>
+        <td class="num">2</td>
+        <td class="num">8</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Delivery Loop</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">8</td>
+        <td class="num">4</td>
+        <td class="num">8</td>
+        <td class="num">8</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Shared Services</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">5</td>
+        <td class="num">5</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Spring Design System</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">Security</td>
+        <td class="num">19</td>
+        <td class="num muted">9</td>
+        <td class="num muted">19</td>
+        <td class="num">19</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Application Security</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">6</td>
+        <td class="num">2</td>
+        <td class="num">6</td>
+        <td class="num">6</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Information Security</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Risk & Compliance</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">3</td>
+        <td class="num">0</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Security Engineering</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Trust & Safety</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">4</td>
+        <td class="num">1</td>
+        <td class="num">4</td>
+        <td class="num">4</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="pillar-row">
+        <td colspan="2" class="pillar-name">(Ungrouped)</td>
+        <td class="num">17</td>
+        <td class="num muted">10</td>
+        <td class="num muted">17</td>
+        <td class="num">17</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">AI Foundations</td>
+        <td><span class="tool-pill both">Both</span></td>
+        <td class="num">2</td>
+        <td class="num">2</td>
+        <td class="num">2</td>
+        <td class="num">2</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+      <tr class="team-row">
+        <td class="team-indent">Leadership</td>
+        <td><span class="tool-pill claude">Claude</span></td>
+        <td class="num">15</td>
+        <td class="num">8</td>
+        <td class="num">15</td>
+        <td class="num">15</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-fill green"
+                 style="width:100%"></div>
+            <span class="bar-label">100%</span>
+          </div>
+        </td>
+        <td><span class="badge badge-green">🟢 Full-Agentic</span></td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="methodology">
+          <strong>Methodology</strong><br />
+          Adoption % = engineers active on <code>Cursor</code> <em>or</em> <code>Claude Code</code> in the 30-day window ÷ total DX-tracked team size.
+          "Active" means <code>is_active = true</code> on at least one day in the window per the DX warehouse
+          (<code>cursor_daily_user_metrics</code> and <code>claude_code_daily_user_metrics</code>).<br /><br />
+          Tier thresholds mirror the Productivity Pillar report: &lt;30% = Exploring,
+          30–59% = Adopting, ≥60% = Full-Agentic. "Primary Tool" shows which tool had
+          more unique active users on that team (Claude / Cursor / Both if equal).<br /><br />
+          <strong>Note on Leadership &amp; AI Foundations</strong>: shown for completeness — these are non-pillar
+          groupings in DX with mixed engineering/non-engineering membership. The high adoption
+          rates reflect Claude licensing rather than day-to-day coding tool usage.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
